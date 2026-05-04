@@ -1,0 +1,705 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>古代萌芽时期机器人 | 机关巧器</title>
+<style>
+/* 全局样式重置与基础配置 —— 深邃明亮质感配色 */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Microsoft Yahei", "Roboto", sans-serif;
+}
+:root {
+    --primary-color: #1BA9F5;
+    --secondary-color: #6C5CE7;
+    --accent-color: #F25C54;
+    --dark-bg: #E4EEF8;
+    --dark-bg-light: #D6E4F5;
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --text-primary: #1E293B;
+    --text-secondary: #334155;
+    --shadow: 0 8px 24px rgba(27, 169, 245, 0.18);
+    --glow: 0 0 20px rgba(27, 169, 245, 0.35);
+    --hologram-glow: 0 0 20px rgba(108, 92, 231, 0.2), 0 0 30px rgba(27, 169, 245, 0.15);
+    --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+body{
+    background: var(--dark-bg);
+    color: var(--text-primary);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(27, 169, 245, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 90% 80%, rgba(108, 92, 231, 0.08) 0%, transparent 25%);
+    background-attachment: fixed;
+}
+
+/* 顶部导航 */
+#top-nav{
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background:rgba(255,255,255,0.98);
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    padding:0 30px;
+    border-bottom:1px solid rgba(27,169,245,0.35);
+    z-index:999;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+#top-nav a{
+    color:var(--text-primary);
+    font-size:18px;
+    text-decoration:none;
+    transition:0.3s;
+}
+#top-nav a:hover{
+    color:var(--primary-color);
+}
+
+/* 头部banner 轮播 */
+/*.banner{
+    width:100%;
+    min-height:400px;
+    height:70vh;
+    position: relative;
+    overflow: hidden;
+    border-bottom:1px solid rgba(27,169,245,0.25);
+    margin-top:60px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+}*/
+.banner{
+    width:100%;
+    min-height:400px;
+    height:70vh;
+    position: relative;
+    overflow: hidden;
+    border-bottom:1px solid rgba(27,169,245,0.25);
+    margin-top:60px;
+    /* 关键：左右分栏，图片左 文字右 */
+    display: flex;
+    align-items:center;
+    justify-content: flex-end; /* 文字靠右 */
+    padding: 20px 40px;
+}
+.banner .slide{
+    width:100%;
+    height:100%;
+    position:absolute;
+    top:0; left:0;
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:left center;
+    background-color:#ffffff;
+    opacity:0;
+    transition:opacity 1.2s ease;
+}
+.banner .slide.active{
+    opacity:1;
+}
+.banner .overlay{
+    position:absolute;
+    top:0;left:0;
+    width:100%;height:100%;
+    background:linear-gradient(rgba(255,255,255,0.08),rgba(255,255,255,0.08));
+    z-index:1;
+}
+
+/* 轮播箭头 */
+.slider-arrow {
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:50px;
+    height:50px;
+    background:rgba(27, 169, 245, 0.2);
+    border:1px solid var(--primary-color);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    color:var(--primary-color);
+    cursor:pointer;
+    z-index:3;
+    transition:0.3s;
+}
+.slider-arrow:hover {
+    background:rgba(27, 169, 245, 0.3);
+}
+.slider-arrow.left {
+    left:20px;
+}
+.slider-arrow.right {
+    right:20px;
+}
+
+/* 文字右侧 */
+/*.banner .text-content{
+    position:relative;
+    z-index:2;
+    width:100%;
+    max-width:1400px;
+    display:flex;
+    flex-direction:column;
+    justify-content:center;
+    align-items:flex-end;
+    text-align:right;
+}*/
+.banner .text-content{
+    position: relative;
+    z-index: 2;
+    width: 35%;        /* 文字只占右侧35%宽度 */
+    min-width: 220px;  /* 最小宽度，手机也不会变形 */
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start; /* 文字统一左对齐更美观 */
+    text-align: left;
+    padding-left: 20px;
+}
+.banner h1{
+    font-size:clamp(10px, 5vw, 52px);
+    background:var(--gradient);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin:5px 0;
+}
+.banner p{
+    font-size:clamp(18px, 3vw, 26px);
+    color:var(--primary-color);
+    margin:6px 0;
+}
+
+/* 主体布局 */
+.main{
+    display:flex;
+    width:100%;
+    max-width:1400px;
+    margin:60px auto;
+    gap:30px;
+    padding:0 20px;
+    flex-wrap:wrap;
+}
+
+/* 左侧导航 */
+#left-nav{
+    width:100%;
+    max-width:240px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    position:sticky;
+    top:100px;
+    height:fit-content;
+}
+#left-nav a{
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 24px;
+    padding: 16px 20px;
+    border-radius: 10px;
+    transition: 0.3s;
+    background: var(--card-bg);
+    border: 1px solid rgba(27,169,245,0.25);
+    text-align:center;
+    cursor: pointer;
+}
+#left-nav a:hover{
+    background: rgba(27,169,245,0.12);
+    color: var(--primary-color);
+    border-left:4px solid var(--primary-color);
+}
+#left-nav a.active{
+    background: rgba(27,169,245,0.18);
+    color: var(--primary-color);
+    border-left:4px solid var(--primary-color);
+    font-weight:bold;
+}
+
+/* 点击详述提示 */
+.tip-wrap {
+    text-align: center;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+.tip {
+    font-size: 20px;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+.tip span {
+    font-size: 18px;
+}
+
+/* 右侧内容区 */
+.content{
+    flex:1;
+    min-width:300px;
+}
+.container{ width:100%; }
+
+h2{
+    text-align:center;
+    font-size:clamp(24px, 4vw, 36px);
+    background:var(--gradient);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin-bottom:40px;
+}
+
+/* 卡片：默认两个并排一行 */
+.card-wrap{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:30px;
+}
+/* 三国时期：一行一个 */
+#threeKingdoms .card-wrap{
+    grid-template-columns: 1fr !important;
+}
+
+.card{
+    width:100%;
+    background:var(--card-bg);
+    padding:40px 30px;
+    border-radius:20px;
+    border:1px solid rgba(27,169,245,0.3);
+    box-shadow:var(--shadow);
+    transition:all 0.5s ease;
+    position:relative;
+    overflow:hidden;
+    backdrop-filter:blur(10px);
+}
+.card:hover{
+    transform:translateY(-10px);
+    box-shadow:var(--hologram-glow);
+}
+.card h3{
+    color:var(--primary-color);
+    font-size:clamp(20px, 3vw, 26px);
+    margin-bottom:20px;
+}
+.card p{
+    color:var(--text-secondary);
+    font-size:16px;
+    line-height:1.8;
+    margin-bottom:15px;
+}
+.card .principle {
+    color:var(--secondary-color);
+    font-weight:bold;
+    margin-top:10px;
+}
+
+/* 图片横向排列（5张图） */
+.img-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    justify-content: center;
+}
+.img-row img {
+    width: 19%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.img-row img:hover {
+    transform: scale(1.05);
+}
+
+/* 普通单图 */
+.card-img {
+    width:100%;
+    height:auto;
+    display:block;
+    object-fit:contain;
+    border-radius:12px;
+    margin-top:15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.card-img:hover {
+    transform: scale(1.02);
+}
+
+footer{
+    text-align:center;
+    padding:40px;
+    background:var(--dark-bg-light);
+    border-top:1px solid rgba(27,169,245,0.25);
+    color:#475666;
+}
+
+/* 内容模块默认隐藏 */
+.tab-content {
+    display:none;
+}
+/* 默认显示 */
+.tab-content.active {
+    display:block;
+}
+
+/* ========== 图片放大弹窗样式 ========== */
+.img-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.img-modal.show {
+    display: flex;
+}
+.img-modal-content {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 12px;
+    box-shadow: 0 0 50px rgba(27, 169, 245, 0.3);
+}
+.img-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 40px;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.img-modal-close:hover {
+    color: var(--primary-color);
+    transform: rotate(90deg);
+}
+.info-row{display:flex;align-items: flex-start; margin-bottom:5px;}
+.info-row h4{flex: 0 0 60px; font-weight: blod;}
+.info-row p{flex:1;line-height: 1.5;}
+</style>
+</head>
+
+<body>
+
+<!-- 顶部导航 -->
+<div id="top-nav">
+    <a href="index.html">⬅返回首页</a>
+</div>
+
+<!-- 头部轮播 -->
+<div id="home" class="banner">
+    <div class="overlay"></div>
+    <div class="slide active" style="background-image:url('images/robot-ancient-1.jpg')"></div>
+    <div class="slide" style="background-image:url('images/robot-ancient-2.jpg')"></div>
+    <div class="slide" style="background-image:url('images/robot-ancient-3.jpg')"></div>
+    <div class="slide" style="background-image:url('images/robot-ancient-4.jpg')"></div>
+
+    <div class="slider-arrow left" onclick="prevSlide()">❮</div>
+    <div class="slider-arrow right" onclick="nextSlide()">❯</div>
+
+    <div class="text-content">
+        <h1>🤖 古代机器人</h1>
+        <h1>萌芽时期</h1>
+        <p>水碓</p>
+        <p>记里鼓车</p>
+        <p>机关巧器</p>
+        <p>千年智能雏形</p>
+    </div>
+</div>
+
+<!-- 主体：左侧导航 + 右侧内容 -->
+<div class="main">
+    <div id="left-nav">
+        <a class="tab-btn active" onclick="changeTab(0)">简介</a>
+        
+        <!-- 向下箭头 + 点击详述 -->
+        <div class="tip-wrap">
+            <div class="tip"><span>⬇</span> 点击详述</div>
+        </div>
+
+        
+        <a class="tab-btn" onclick="changeTab(1)">春秋战国</a>
+        <a class="tab-btn" onclick="changeTab(2)">秦汉时期</a>
+        <a class="tab-btn" onclick="changeTab(3)">三国魏晋</a>
+        <a class="tab-btn" onclick="changeTab(4)">隋唐宋元</a>
+    </div>
+
+    <div class="content">
+        <div class="container">
+
+            <!-- 默认内容：概念与理念 -->
+            <div class="tab-content active">
+                <h2 id="history">概念与理念</h2>
+                <div class="card-wrap">
+                    <div class="card">
+                        <h3>📜 古代机器人的萌芽</h3>
+                        <p>古代机器人并非现代机械，而是以机械结构、重力、水力、<br>齿轮驱动的自动装置，是人类最早的自动化思想萌芽。<br>（点击图片放大查看）</p>
+                        <img src="images/robot-ancient-5.jpg" class="card-img" onclick="openImg(this.src)" alt="古代机器人萌芽">
+                        <p style="text-align: center;">指南车</p>
+                    </div>
+                    <div class="card">
+                        <h3>⚙️ 核心技术原理</h3>
+                        <p>利用杠杆、齿轮、凸轮、连杆、水力实现自动运动，<br>无需电力，却能完成行走、报时、演奏、搬运等功能。<br>（点击图片放大查看）</p>
+                        <img src="images/robot-ancient-42.jpg" class="card-img" onclick="openImg(this.src)" alt="核心技术原理">
+                        <p style="text-align: center;">木牛流马</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容2：春秋战国 -->
+            <div class="tab-content" id="threeKingdoms">
+                <h2>春秋战国 · 木鸟飞天</h2>
+                <div class="card-wrap">
+                    <div class="card">
+                        <h3>🕊️ 鲁班木鸟——古代侦察机</h3>
+                        <p>鲁班制造的机关木鸟，可在空中飞行三日不落，是最早的飞行机关装置。</p>
+                         <div class="info-row">
+                        <h4>来源：</h4>
+                            <p>鲁班之作</p></div>
+                        <div class="info-row">
+                            <h4>用途：</h4>
+                            <p>军事侦察、技术演示（展示仿生、机械、风力利用的高超技艺）</p></div>
+                        <div class="info-row">
+                            <h4>使用：</h4>
+                            <p>靠风+结构自稳</p></div>
+                        <p class="principle">✅ 工作原理：仿生翅膀+弹性机关+风力平衡，无需燃料持续飞行（点击放大查看）</p>
+                        <div class="img-row">
+                            <img src="images/robot-ancient-7.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-8.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-9.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-10.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-11.jpg" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="tab-content" id="threeKingdoms">
+                <h2>秦汉时期</h2>
+                <div class="card-wrap">
+                    <div class="card">
+                        <h3>🧭指南车</h3>
+                        <div class="info-row">
+                        <h4>来源：</h4>
+                            <p>远古传说：最早见于《古今注》，相传黄帝战蚩尤时，于大雾中造指南车辨方向；也有传为周公所制，
+                            以送使臣归国。三国时期（235年），魏国马钧成功创制出有明确记载的第一辆指南车 。</p></div>
+                        <div class="info-row">
+                            <h4>作用：</h4><p>方向指引、仪仗象征、军事用途</p>
+                        </div>
+                        <div class="info-row">
+                            <h4>使用：</h4><p>驱动（外力）、校准（正南）、观测</p>
+                        </div>
+                        <p class="principle">✅ 工作原理：利用左右车轮的转速差自动校正方向。（点击放大查看）</p>
+                        <div class="img-row">
+                            <img src="images/robot-ancient-12.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-13.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-14.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-15.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-16.jpg" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>记里鼓车</h3>
+                        <div class="info-row">
+                        <h4>来源：</h4>
+                        <p> 最早记载：西汉《西京杂记》称“记道车”，最迟西汉已存在 <br>
+                            完善定型：三国马钧制出有记载的首台记里鼓车 。</p></div>
+                        <div class="info-row">
+                        <h4>作用：</h4>
+                        <p> 自动计程、皇家仪仗、测绘与行军（纯机械、无需电力，停下即停、启动即计）</p></div>
+                        <div class="info-row">
+                        <h4>使用：</h4>
+                        <p> 驱动（马牵引）、观测（士兵/侍从听鼓声、镯声计数）</p></div>
+                        <p class="principle">✅ 工作原理：齿轮减速传动（车轮转->齿轮组减速->每满一里，凸轮拨动木人自动敲鼓）
+                            （点击放大查看）
+                        </p>
+                        <div class="img-row">
+                            <img src="images/robot-ancient-17.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-18.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-19.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-20.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-21.jpg" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <!-- 内容3：三国时期 —— 一行一个 + 5张图横向 -->
+            <div class="tab-content" id="threeKingdoms">
+                <h2>三国时期 · 机械巅峰</h2>
+                <div class="card-wrap">
+                    <div class="card">
+                        <h3>🐂 木牛流马</h3>
+                        <div class="info-row">
+                        <h4>来源：</h4>
+                        <p> 诸葛亮发明，自动行走运粮，世界最早陆地运输机器人。</p></div>
+                        <div class="info-row">
+                        <h4>作用：</h4>
+                        <p> 山地运粮神器</p></div>
+                        <div class="info-row">
+                        <h4>使用：</h4>
+                        <p>装粮（放入牛腹/马腹 ）、推行、上坡下坡、刹车（牛舌）、休息</p></div>
+                        
+                        <p class="principle" >✅ 工作原理：杠杆+重力+人力（核心），山路自动行走（点击放大查看）</p>
+                        <!-- 5张图横向排列 -->
+                        <div class="img-row">
+                            <img src="images/robot-ancient-22.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-23.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-24.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-25.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-26.jpg" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>🏹 诸葛连弩——古代机关枪</h3>
+                        <div class="info-row">
+                        <h4>前身：</h4>
+                        <p>战国时期连弩。</p></div>
+                        <div class="info-row">
+                        <h4>改良：</h4>
+                        <p>诸葛亮</p></div>
+                        <div class="info-row">
+                        <h4>作用：</h4>
+                        <p>全自动连发机械弩，机关结构精密，近距离高射速压制，实现自动化攻击。</p></div>
+                        <div class="info-row">
+                        <h4>使用：</h4>
+                        <p>装填、上弦、发射</p></div>
+                        
+                        <p class="principle">✅ 工作原理：滑槽+弹簧机关+联动扳机，一键连续发射（点击图片放大查看）</p>
+                        <!-- 5张图横向排列 -->
+                        <div class="img-row">
+                            <img src="images/robot-ancient-27.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-28.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-29.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-30.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-31.jpg" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容4：唐宋巅峰 -->
+            <div class="tab-content" id="threeKingdoms">
+                <h2>巅峰时期 · 水力智能</h2>
+                <div class="card-wrap">
+                    <div class="card">
+                        <h3>🕰️ 水运浑天仪</h3>
+                        <div class="info-row">
+                        <h4>首创：</h4>
+                        <p>东汉·张衡（公元117年左右）</p></div>
+                        <div class="info-row">
+                        <h4>改进：</h4>
+                        <p>唐·僧一行、梁令瓒（公元725年）造出更精密的水运浑天俯视图（带自动报时）</p></div>
+                        <div class="info-row">
+                        <h4>作用：</h4>
+                        <p> 演示天象、天文教学/观测参考、自动报时、历法校验</p></div>
+                        <div class="info-row">
+                        <h4>使用：</h4>
+                        <p>底部漏壶持续滴水、水流驱动齿轮、带动天球一昼夜转一圈、看球上星宿出没、日月位置、<br>听/看木人自动报时</p></div>
+                        
+                        <p class="principle">✅ 工作原理：漏壶流水 → 驱动水轮 → 齿轮变速 → 
+                            铜球匀速自转（1天1圈） → 同步模拟天象 + 带动木人报时（点击放大查看）</p>
+                        <div class="img-row">
+                            <img src="images/robot-ancient-32.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-33.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-34.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-35.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-36.jpg" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>🚗 走马灯</h3>
+                        <div class="info-row">
+                        <h4>来源：</h4>
+                        <p>宋代发明并盛</p></div>
+                        <div class="info-row">
+                        <h4>作用：</h4>
+                        <p>节日观赏、花灯装饰（元宵、中秋常用）、娱乐表演，灯内人物、车马自动转圈</p></div>
+                        <div class="info-row">
+                        <h4>使用：</h4>
+                        <p>灯内点燃蜡烛/油灯、上方叶轮、剪纸人偶放在灯罩内部、蜡烛燃烧产生热气，自动带动顶部叶轮转动、
+人影、马影跟着循环旋转，看上去像奔跑走动</p></div>
+                        <p class="principle">✅ 工作原理：利用热对流原理，把热能转化为机械能（点击放大查看）</p>
+                        <div class="img-row">
+                            <img src="images/robot-ancient-37.gif" onclick="openImg(this.src)" alt="走马灯动图" style="object-fit:contain;">
+                            <img src="images/robot-ancient-38.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-39.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-40.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-ancient-41.jpg" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 图片放大弹窗 -->
+<div class="img-modal" id="imgModal" onclick="closeImg()">
+    <span class="img-modal-close">&times;</span>
+    <img src="" class="img-modal-content" id="modalImg">
+</div>
+
+<footer>
+古代萌芽机器人科普｜机关巧器 · 千年智慧
+</footer>
+
+<script>
+// 轮播：自动 + 手动
+const slides = document.querySelectorAll('.banner .slide');
+let idx = 0;
+function showSlide(index) {
+    slides.forEach(s => s.classList.remove('active'));
+    idx = (index + slides.length) % slides.length;
+    slides[idx].classList.add('active');
+}
+function nextSlide() { showSlide(idx + 1); }
+function prevSlide() { showSlide(idx - 1); }
+setInterval(()=>nextSlide(), 3000);
+
+// 左侧切换右侧内容
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+function changeTab(index) {
+    tabBtns.forEach((btn,i)=>{
+        btn.classList.toggle('active', i===index);
+    });
+    tabContents.forEach((con,i)=>{
+        con.classList.toggle('active', i===index);
+    });
+}
+
+// ========== 图片放大功能 ==========
+const imgModal = document.getElementById("imgModal");
+const modalImg = document.getElementById("modalImg");
+
+function openImg(src) {
+    imgModal.classList.add("show");
+    modalImg.src = src;
+}
+
+function closeImg() {
+    imgModal.classList.remove("show");
+}
+</script>
+
+</body>
+</html>

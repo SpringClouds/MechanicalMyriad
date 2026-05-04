@@ -1,0 +1,2410 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>耐高温消防机器人 | 特种机器人科普专题</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "Roboto", sans-serif;
+        }
+
+        :root {
+            --primary-color: #ff7d7d;
+            --secondary-color: #b70909;
+            --accent-color: #a30c0c;
+            --dark-bg: #050a18;
+            --card-bg: rgba(183, 9, 9, 0.15);
+            --text-primary: #e0e8ff;
+            --shadow: 0 8px 32px rgba(183, 9, 9, 0.2);
+            --glow: 0 0 20px rgba(255, 125, 125, 0.4);
+            --gradient: linear-gradient(135deg, #ff7d7d, #b70909);
+        }
+
+        /*body {
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            background-image:
+                radial-gradient(circle at 10%, 20%, rgba(255, 125, 125, 0.06) 0%, transparent 20%),
+                radial-gradient(circle at 90%, 80%, rgba(183, 9, 9, 0.06) 0%, transparent 20%);
+            background-attachment: fixed;
+            line-height: 1.7;
+            padding-bottom: 0;
+        }*/
+        body {
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            background: linear-gradient(135deg, #000, #1a0505, #2b0a0a, #441010, #1a0505);
+            background-image:
+                radial-gradient(ellipse at 20% 20%, rgba(255, 80, 30, 0.25) 0%, transparent 50%),
+                radial-gradient(ellipse at 80% 30%, rgba(255, 120, 50, 0.2) 0%, transparent 55%),
+                radial-gradient(ellipse at 60% 80%, rgba(255, 60, 20, 0.22) 0%, transparent 60%),
+                radial-gradient(ellipse at 10% 70%, rgba(255, 100, 40, 0.18) 0%, transparent 50%);
+            background-attachment: fixed;
+            background-size: 120% 120%;
+            background-color: #000;
+            animation: fireHoloMove 16s ease-in-out infinite alternate;
+            color: var(--text-primary);
+            line-height: 1.7;
+            padding-bottom: 0;
+        }
+
+        #nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 60px;
+            background: rgba(5, 10, 24, 0.97);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 40px;
+            border-bottom: 1px solid rgba(255, 125, 125, 0.4);
+            z-index: 9999;
+        }
+
+        #nav a {
+            color: #e0e8ff;
+            font-size: 18px;
+            text-decoration: none;
+            transition: 0.3s;
+        }
+
+        #nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 600px;
+            overflow: hidden;
+            margin-top: 60px;
+        }
+
+        .carousel-images {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-images img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .carousel-images img.active {
+            opacity: 1;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 50px;
+            height: 50px;
+            background: rgba(183, 9, 0.3);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            font-size: 24px;
+            cursor: pointer;
+            z-index: 10;
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        .carousel-btn:hover {
+            background: rgba(255, 125, 125, 0.2);
+            box-shadow: var(--glow);
+        }
+
+        .prev { left: 30px; }
+        .next { right: 30px; }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 12px;
+        }
+
+        .dot {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.2);
+            cursor: pointer;
+            border: 1px solid rgba(255, 125, 125, 0.3);
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            background: var(--primary-color);
+            transform: scale(1.3);
+            box-shadow: var(--glow);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 40px 20px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: 42px;
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 50px;
+            letter-spacing: 2px;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 125, 125, 0.2);
+            border-radius: 18px;
+            padding: 35px;
+            margin: 30px 0;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--glow);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 15px;
+            margin-bottom: 25px;
+            font-size: 26px;
+        }
+
+        p {
+            font-size: 16px;
+            color: var(--text-primary);
+            margin-bottom: 15px;
+        }
+
+        strong {
+            color: var(--primary-color);
+        }
+
+        .process-box {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 16px;
+            margin-top: 20px;
+        }
+
+        .process-step {
+            flex: 1;
+            min-width: 180px;
+            text-align: center;
+            padding: 20px 10px;
+            background: rgba(255, 125, 125, 0.08);
+            border-radius: 12px;
+            border: 1px solid rgba(255, 125, 125, 0.2);
+            transition: 0.3s;
+        }
+
+        .process-step:hover {
+            background: rgba(255, 125, 125, 0.15);
+            transform: scale(1.03);
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th, td {
+            border: 1px solid rgba(255, 125, 125, 0.2);
+            padding: 16px;
+            text-align: center;
+        }
+
+        th {
+            background: rgba(183, 9, 9, 0.2);
+            color: var(--primary-color);
+            font-size: 16px;
+        }
+
+        .explode-view {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+            padding: 10px 0;
+            overflow: hidden;
+        }
+
+        .explode-item {
+            width: 100%;
+            text-align: center;
+            background: rgba(183, 9, 9, 0.1);
+            border-radius: 14px;
+            padding: 20px;
+            border: 1px solid rgba(255, 125, 125, 0.2);
+            transition: 0.3s;
+        }
+
+        .explode-item img {
+            width: 100%;
+            height: auto;
+            object-fit: contain;
+            border-radius: 8px;
+            margin-bottom: 10px;
+            cursor: pointer;
+        }
+
+        .explode-item h3 {
+            color: var(--primary-color);
+            font-size: 16px;
+            margin-bottom: 8px;
+        }
+
+        .img-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 10, 24, 0.95);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .img-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 80%;
+            max-height: 80%;
+            border-radius: 12px;
+            box-shadow: var(--glow);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 30px;
+            right: 30px;
+            width: 50px;
+            height: 50px;
+            background: rgba(255, 125, 125, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            font-size: 24px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .close-modal:hover {
+            background: rgba(255, 125, 125, 0.2);
+            transform: scale(1.1);
+        }
+
+        /* 遥控器原理弹窗样式 */
+        .ctrl-popup{
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 90%;
+            background: #0a1428;
+            border: 2px solid #ff7d7d;
+            border-radius: 12px;
+            padding: 20px;
+            z-index: 999;
+            box-shadow: 0 0 20px rgba(255,125,125,0.3);
+            display: none;
+        }
+        .ctrl-popup.show{
+            display: block;
+        }
+        .popup-title{
+            color: #ff7d7d;
+            font-size: 18px;
+            margin-bottom: 10px;
+            text-align: center;
+        }
+        .popup-content{
+            color: #e0e8ff;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 15px;
+        }
+        .close-popup{
+            width: 100%;
+            padding: 8px;
+            background: #b70909;
+            color: #fff;
+            border: none;
+            border-radius: 6px;
+            cursor: pointer;
+        }
+
+        /* 开机按钮样式 */
+        .start-btn{
+            display: block;
+            margin: 10px auto 20px;
+            padding: 12px 30px;
+            background: #c84900;
+            color: #fff;
+            font-size: 16px;
+            font-weight: bold;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            box-shadow: 0 0 15px rgba(200, 0, 0, 0.4);
+            transition: 0.3s;
+        }
+        .start-btn:hover{
+            background: #a80000;
+            transform: scale(1.05);
+        }
+
+        @media (max-width:768px){
+            .explode-view{
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+        /* 任务完成自定义弹窗 适配消防红黑主题 */
+.task-alert-modal{
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(5,10,24,0.85);
+    backdrop-filter: blur(8px);
+    display: none;
+    align-items: center;
+    justify-content: center;
+    z-index: 999999;
+}
+.task-alert-box{
+    background: linear-gradient(135deg, #050a18, #1a1022);
+    border: 2px solid var(--primary-color);
+    border-radius: 18px;
+    padding: 40px 50px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255,125,125,0.35);
+}
+.task-alert-box h3{
+    color: var(--primary-color);
+    font-size: 24px;
+    margin-bottom: 25px;
+    letter-spacing: 2px;
+}
+.task-alert-btn{
+    padding: 10px 30px;
+    background: var(--secondary-color);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.task-alert-btn:hover{
+    background: var(--accent-color);
+    box-shadow: 0 0 15px rgba(255,125,125,0.4);
+}
+
+/* ===================== 环境模拟：浓烟 / 小雨 / 动态火场 ===================== */
+.fire-scene-bg {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: #000;
+    z-index: -2;
+}
+.fire-flicker {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: radial-gradient(circle, rgba(255,80,0,0.15), transparent 70%);
+    animation: fireFlicker 1.2s infinite alternate;
+    z-index: -1;
+    opacity: 0;
+}
+@keyframes fireFlicker {
+    0% { opacity: 0.1; }
+    100% { opacity: 0.25; }
+}
+
+.smoke-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(40,40,40,0.6);
+    backdrop-filter: blur(10px);
+    z-index: 4;
+    opacity: 0;
+    transition: opacity 1s;
+}
+
+.rain-layer {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(white 0.5px, transparent 1px),
+        radial-gradient(white 0.5px, transparent 1px);
+    background-size: 30px 30px;
+    background-position: 0 0, 15px 15px;
+    opacity: 0;
+    z-index: 3;
+    animation: rainFall 0.3s linear infinite;
+}
+@keyframes rainFall {
+    0% { background-position: 0 0, 15px 15px; }
+    100% { background-position: 0 30px, 15px 45px; }
+}
+
+.env-buttons {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin: 10px 0;
+}
+.env-btn {
+    padding: 8px 16px;
+    border-radius: 8px;
+    border: none;
+    background: #222;
+    color: #fff;
+    cursor: pointer;
+}
+.env-btn.active {
+    background: var(--primary-color);
+}
+
+/* ===================== 右下角悬浮全息消防机器人影像 ===================== */
+.hologram-robot {
+    position: fixed;
+    right: 20px;
+    bottom: 20px;
+    width: 120px;
+    height: 180px;
+    z-index: 8888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 12px rgba(255,125,125,0.6));
+    pointer-events: none;
+}
+.holo-body {
+    width: 50px;
+    height: 70px;
+    background: linear-gradient(180deg, #ff7d7d44, #b7090966);
+    border: 2px solid #ff7d7d;
+    border-radius: 8px;
+    position: relative;
+    animation: holoRotate 6s linear infinite;
+}
+.holo-cannon {
+    position: absolute;
+    top: -12px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 10px;
+    height: 18px;
+    background: #ff7d7d88;
+    border: 1px solid #ff7d7d;
+    border-radius: 2px;
+}
+.holo-track {
+    position: absolute;
+    bottom: -6px;
+    width: 40px;
+    height: 8px;
+    background: #b7090966;
+    border: 1px solid #ff7d7d;
+    border-radius: 2px;
+}
+.holo-track.left {
+    left: -15px;
+}
+.holo-track.right {
+    right: -15px;
+}
+.holo-light {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 120px;
+    height: 180px;
+    border: 1px solid rgba(255,125,125,0.3);
+    border-radius: 50%;
+    animation: holoScan 3s linear infinite;
+}
+@keyframes holoRotate {
+    0% { transform: rotateY(0deg); }
+    100% { transform: rotateY(360deg); }
+}
+@keyframes holoScan {
+    0% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.8); }
+    50% { opacity: 0.8; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0.4; transform: translate(-50%, -50%) scale(0.8); }
+}
+
+/* 🔥 全息机器人喷水特效【加大加粗 更明显版】（声音驱动） */
+.holo-water-group {
+    position: absolute;
+    top: -25px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 30px;
+    height: 0;
+    pointer-events: none;
+    display: none;
+}
+.holo-water {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background: linear-gradient(to top, rgba(100, 200, 255, 0.95), rgba(130,210,255,0));
+    border-radius: 50%;
+    filter: blur(3px);
+    box-shadow: 0 0 8px #87ceff;
+}
+.holo-water-1 { width: 10px; height: 50px; top: 0; }
+.holo-water-2 { width: 18px; height: 45px; top: 8px; opacity: 0.85; }
+.holo-water-3 { width: 26px; height: 35px; top: 15px; opacity: 0.7; }
+.holo-water-on .holo-water-group {
+    display: block;
+    animation: holoWaterShake 0.3s infinite alternate;
+}
+@keyframes holoWaterShake {
+    0% { transform: translateX(-50%) rotate(-2deg); }
+    100% { transform: translateX(-50%) rotate(2deg); }
+}
+
+    </style>
+</head>
+
+<body>
+
+    <!-- 右下角全息消防机器人悬浮影像 + 新增喷水结构 -->
+    <div class="hologram-robot">
+        <div class="holo-light"></div>
+        <div class="holo-body">
+            <div class="holo-cannon"></div>
+            <!-- 全息喷水 -->
+            <div class="holo-water-group">
+                <div class="holo-water holo-water-1"></div>
+                <div class="holo-water holo-water-2"></div>
+                <div class="holo-water holo-water-3"></div>
+            </div>
+            <div class="holo-track left"></div>
+            <div class="holo-track right"></div>
+        </div>
+    </div>
+
+    <div id="nav">
+        <a href="index.html">← 返回首页</a>
+        <a href="#interaction">模拟交互</a>
+        <a href="#principle">工作原理</a>
+        <a href="#type">常见类型</a>
+        <a href="#photo">原理图</a>
+        <a href="#scenarios">应用场景</a>
+    </div>
+
+    <div class="carousel">
+        <div class="carousel-images">
+            <img src="images/robot-fire-1.jpg" class="active" alt="耐高温消防机器人1">
+            <img src="images/robot-fire-2.jpg" alt="耐高温消防机器人2">
+            <img src="images/robot-fire-3.jpg" alt="耐高温消防机器人3">
+            <img src="images/robot-fire-4.jpg" alt="耐高温消防机器人4">
+        </div>
+        <button class="carousel-btn prev" onclick="prevSlide()">❮</button>
+        <button class="carousel-btn next" onclick="nextSlide()">❯</button>
+        <div class="carousel-dots">
+            <span class="dot active" onclick="goToSlide(0)"></span>
+            <span class="dot" onclick="goToSlide(1)"></span>
+            <span class="dot active" onclick="goToSlide(2)"></span>
+            <span class="dot" onclick="goToSlide(3)"></span>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>耐高温消防机器人特种科技科普交互中心</h1>
+
+        <!-- 交互系统（已移到最顶部） -->
+        <div class="glass-card" id="interaction">
+            <h2>一、消防机器人模拟交互控制系统</h2>
+
+            <!-- 开机按钮 -->
+            <button class="start-btn" onclick="startRobot()">🔵 开机 - 淼淼启动</button>
+
+<style>
+#controlSystem * {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+#controlSystem {
+  width: 100%;
+  background: transparent;
+  font-family: "Microsoft Yahei", sans-serif;
+  color: #e6edf7;
+  padding: 0;
+}
+#controlSystem .app {
+  width: 100%;
+  max-width: 100%;
+  margin: 0 auto;
+}
+#controlSystem .container {
+  width: 100%;
+  padding:0;
+}
+#controlSystem .wrap-col {
+  display: flex;
+  gap: 20px;
+  width: 100%;
+  min-height: auto;
+  transform: scale(0.90); /* 缩小到 94%，你可以自己改 0.92 / 0.95 */
+  transform-origin: top center; /* 从顶部中心缩小，不跑偏 */
+}
+#controlSystem .col-left {
+  flex: 2;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+#controlSystem .col-right {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+  position: relative;
+}
+#controlSystem .help-box,
+#controlSystem .data-panel,
+#controlSystem .robot-scene,
+#controlSystem .ctrl-panel {
+  border-radius: 12px;
+  width: 100%;
+}
+#controlSystem .help-box {
+  background: #0a1428;
+  padding: 10px; /* 从 15px → 12px */
+  flex: 0 0 24%;
+}
+#controlSystem .help-box h2 {
+  color: #ffcc22;
+  font-size: clamp(14px, 1.6vw, 18px);
+  margin-bottom: 10px;
+  border-left:none;
+  padding-left:0;
+}
+#controlSystem .help-box ul {
+  list-style: disc inside;
+  line-height: 1.5;
+  font-size: clamp(11px, 1.1vw, 14px);
+  color: #cbd5e1;
+}
+#controlSystem .robot-scene {
+  background: #000208;
+  flex: 1;
+  position: relative;
+  overflow: hidden;
+  border: 2px solid #c92020;
+  min-height: 320px;
+  cursor: crosshair;
+}
+#controlSystem .scene-ground {
+  position: absolute;
+  bottom: 0;
+  width: 100%;
+  height: 20%;
+  background: #111;
+  border-top: 1px solid #333;
+}
+#controlSystem .data-panel {
+  background: #081022;
+  padding: 20px;
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 12px;
+  flex: 0 0 auto;
+}
+#controlSystem .data-item {
+  font-size: clamp(13px, 1.2vw, 16px);
+  padding: 10px 12px;
+  background: rgba(12,22,44,0.6);
+  border: 1px solid rgba(255,125,125,0.15);
+  border-radius: 10px;
+  position: relative;
+  overflow: hidden;
+}
+#controlSystem .data-item::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  top: 0;
+  height: 100%;
+  width: 4px;
+  background: var(--primary-color);
+}
+#controlSystem .data-value {
+  float: right;
+  font-weight: bold;
+  transition: all 0.3s ease;
+}
+#controlSystem .data-label {
+  color: #a0b8e0;
+}
+#controlSystem .text-red { color: #ff3636; }
+#controlSystem .text-yellow { color: #ffcc22; }
+#controlSystem .text-green { color: #36e050; }
+#controlSystem .text-blue { color: #40b8ff; }
+#controlSystem .ctrl-title {
+  text-align: center;
+  font-size: clamp(16px, 2vw, 24px);
+  color: #ff5555;
+  margin-bottom: 15px;
+}
+#controlSystem .dir-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  margin-bottom: 15px;
+}
+#controlSystem .dir-btn {
+  padding: 14px 0;
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  background: #15306b;
+  color: #fff;
+  cursor: pointer;
+  transition: 0.15s;
+  user-select: none;
+}
+#controlSystem .dir-btn.active {
+  background: #2563eb;
+  transform: scale(0.95);
+}
+#controlSystem .dir-btn.stop-btn { background: #990000; }
+#controlSystem .dir-btn.stop-btn.active { background: #ff1a1a; }
+#controlSystem .func-btn {
+  padding: 14px 0;
+  font-size: clamp(12px, 1.2vw, 16px);
+  font-weight: bold;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+#controlSystem .water-btn { background: #0069aa; color: #fff; }
+#controlSystem .fire-btn { background: #ff3300; color: #fff; }
+#controlSystem .clear-fire-btn { background: #666; color: #fff; }
+#controlSystem .reset-btn { background: #009930; color: #fff; }
+#controlSystem .state-text {
+  text-align: center;
+  padding: 12px;
+  background: #000;
+  border-radius: 10px;
+  margin: 10px 0;
+  font-size: clamp(12px, 1.2vw, 16px);
+}
+#controlSystem .log-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: clamp(12px,1vw,14px);
+  margin-bottom: 8px;
+  cursor: pointer;
+  padding: 4 8px;
+  background: rgba(255,125,125,0.1);
+  border-radius: 6px;
+}
+#controlSystem .log-toggle {
+  color: var(--primary-color);
+  font-weight: bold;
+  user-select: none;
+}
+#controlSystem .log-box {
+  background: #000;
+  border: 1px solid #222;
+  border-radius: 10px;
+  padding: 12px;
+  height: 120px;
+  overflow-y: auto;
+  font-size: clamp(11px, 1vw, 13px);
+  line-height: 1.5;
+  transition: height 0.3s;
+}
+#controlSystem .log-box.collapsed {
+  height: 0;
+  padding: 0;
+  border: none;
+  overflow: hidden;
+}
+#controlSystem .fire-robot {
+  width: 18%;
+  height: 35%;
+  position: absolute;
+  left: 50%; top: 50%;
+  transform: translate(-50%,-50%) rotate(0deg);
+  transition: transform 0.05s linear;
+  z-index: 10;
+}
+#controlSystem .robot-body {
+  width: 100%;
+  height: 50%;
+  background: linear-gradient(145deg,#700000,#200000);
+  border-radius: 18px;
+  position: relative;
+  border: 3px solid #ff4444;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+  color: #ffd000;
+  font-size: clamp(9px, 0.7vw, 12px);
+  font-weight: bold;
+  line-height: 1.2;
+  padding: 2px;
+}
+#controlSystem .body-fin {
+  position: absolute;
+  width: 5%;
+  height: 60%;
+  background: #550000;
+  top: 20%;
+}
+#controlSystem .fin1 {left:10%;}
+#controlSystem .fin2 {left:20%;}
+#controlSystem .fin3 {right:20%;}
+#controlSystem .fin4 {right:10%;}
+#controlSystem .robot-sensor-top {
+  width: 25%;
+  height: 15%;
+  background: #191919;
+  border-radius: 8px;
+  position: absolute;
+  top: -18%;
+  left: 50%;
+  transform: translateX(-50%);
+  border: 1px solid #666;
+}
+#controlSystem .sensor-eye {
+  width: 20%;
+  height: 25%;
+  background: #00ff88;
+  border-radius: 50%;
+  position: absolute;
+  top: 20%;
+  box-shadow: 0 0 8px #00ff88;
+}
+#controlSystem .eye-L{left:15%;}
+#controlSystem .eye-R{right:15%;}
+#controlSystem .water-cannon-real {
+  width: 12%;
+  height: 30%;
+  background: #222;
+  position: absolute;
+  top: -28%;
+  left: 50%;
+  transform-origin: center bottom;
+  transform: translateX(-50%) rotate(0deg);
+  border-radius: 4px 4px 0 0;
+  border: 1px solid #888;
+  transition: transform 0.2s;
+}
+#controlSystem .cannon-nozzle {
+  width: 40%;
+  height: 20%;
+  background: #666;
+  margin: 0 auto;
+}
+
+/* ========== ✅ 扇形扩散水柱（真实消防水炮） ========== */
+#controlSystem .water-fan-group {
+  position: absolute;
+  left: 50%;
+  bottom: 0;
+  transform: translateX(-50%);
+  width: 60px;
+  height: 120px;
+  pointer-events: none;
+  z-index: 5;
+  display: none;
+}
+#controlSystem .water-on .water-fan-group {
+  display: block;
+  animation: waterFanShake 0.4s infinite alternate;
+}
+@keyframes waterFanShake {
+  0% { transform: translateX(-50%) rotate(-1deg); }
+  100% { transform: translateX(-50%) rotate(1deg); }
+}
+
+#controlSystem .water-fan {
+  position: absolute;
+  left: 50%;
+  transform: translateX(-50%);
+  background: linear-gradient(to bottom, rgba(130, 210, 255, 0.7), rgba(130, 210, 255, 0));
+  border-radius: 50%;
+  filter: blur(4px);
+}
+#controlSystem .fan1 {
+  width: 12px;
+  height: 110px;
+  top: 0;
+}
+#controlSystem .fan2 {
+  width: 25px;
+  height: 100px;
+  top: 10px;
+  opacity: 0.7;
+}
+#controlSystem .fan3 {
+  width: 35px;
+  height: 85px;
+  top: 25px;
+  opacity: 0.5;
+}
+#controlSystem .fan4 {
+  width: 45px;
+  height: 65px;
+  top: 45px;
+  opacity: 0.35;
+}
+
+#controlSystem .track-left,
+#controlSystem .track-right {
+  width:30%;height:12%;background:#0a0a0a;position:absolute;bottom:-10%;
+  border-radius:6px;border:2px solid #444;overflow:hidden;
+}
+#controlSystem .track-left  { left:5%; }
+#controlSystem .track-right { right:5%; }
+#controlSystem .track-wheel {width:12%;height:80%;background:#222;float:left;margin:0 2%;}
+@keyframes controlTrackL { 0%{background-position:0 0;}100%{background-position:200px 0;} }
+@keyframes controlTrackR { 0%{background-position:0 0;}100%{background-position:-200px 0;} }
+#controlSystem .track-active-L { animation: controlTrackL 0.3s linear infinite; }
+#controlSystem .track-active-R { animation: controlTrackR 0.3s linear infinite; }
+@keyframes controlAlarmHigh {
+  0%,100%{background:rgba(255,0,0,0.15);}50%{background:rgba(255,0,0,0.4);} }
+#controlSystem .alarm-high { animation: controlAlarmHigh 0.8s infinite; }
+#controlSystem .log-send{color:#40b8ff;}
+#controlSystem .log-warn{color:#ffcc22;}
+#controlSystem .log-error{color:#ff3636;}
+
+#controlSystem .fire {
+  position: absolute;
+  transform-origin: center bottom;
+  animation: fireGrow 0.6s forwards;
+}
+#controlSystem .fire.extinguishing {
+  animation: extinguishShrink 1.2s forwards;
+}
+@keyframes fireGrow {
+  from{transform:scale(0.2);opacity:0;}
+  to{transform:scale(1);opacity:1;}
+}
+@keyframes extinguishShrink {
+  from{transform:scale(1);opacity:1;}
+  to{transform:scale(0);opacity:0;}
+}
+#controlSystem .fire-flame {
+  position: absolute;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  background: radial-gradient(circle, #ff9500 0%, #ff3300 50%, #880000 100%);
+  border-radius: 50% 50% 20% 20%;
+  filter: blur(2px);
+  animation: flameAnimate 0.5s infinite alternate;
+  opacity: 0.9;
+}
+#controlSystem .fire-smoke {
+  position: absolute;
+  transform: translateX(-50%);
+  background: rgba(50,50,50,0.6);
+  border-radius: 50%;
+  filter: blur(4px);
+  animation: smokeAnimate 0.7s infinite alternate;
+  opacity:0;
+}
+#controlSystem .fire.extinguishing .fire-smoke {
+  opacity:0.8;
+}
+@keyframes flameAnimate {
+  0% { transform: translateX(-50%) scale(1); }
+  100% { transform: translateX(-50%) scale(1.1); }
+}
+@keyframes smokeAnimate {
+  0% { opacity: 0.5; bottom: 28px; }
+  100% { opacity: 0.7; bottom: 34px; }
+}
+
+/* 点击目标标记点 */
+.click-target-mark{
+    position:absolute;
+    width:14px;height:14px;
+    background:#ff7d7d;
+    border-radius:50%;
+    border:2px solid #fff;
+    transform:translate(-50%,-50%);
+    z-index:5;
+    box-shadow:0 0 10px #ff7d7d;
+    pointer-events:none;
+}
+
+@media (max-width:900px){
+  #controlSystem .wrap-col{ flex-direction: column; }
+}
+/* ====================== ✅ 美化：热点图片 + 高级弹窗 ====================== */
+        .parts-img-container {
+            position: relative;
+            width: 100%;
+            margin: 20px 0;
+            text-align: center;
+        }
+        .parts-img {
+            max-width: 100%;
+            max-height: 380px;
+            border-radius: 16px;
+            border: 2px solid #d94141;
+            box-shadow: 0 0 30px rgba(255, 179, 0, 0.2);
+            cursor: pointer;
+        }
+        .hotspot {
+            position: absolute;
+            width: 26px;
+            height: 26px;
+            background: #d93e3e;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            cursor: pointer;
+            box-shadow: 0 0 15px #d93e3e;
+            z-index: 10;
+            transition: 0.25s ease;
+            border: 2px solid #fff;
+            animation: pulse 1.5s infinite;
+        }
+        .hotspot:hover {
+            transform: scale(1.25);
+            box-shadow: 0 0 25px #d93e3e;
+        }
+        @keyframes pulse {
+            0%{box-shadow:0 0 0 0 rgba(254, 60, 60, 0.578);}
+            70%{box-shadow:0 0 0 12px rgba(255,58,58,0);}
+            100%{box-shadow:0 0 0 0 rgba(255,58,58,0);}
+        }
+
+        /* 🔥 超级美观的科技感弹窗 */
+        .part-modal {
+            position: fixed;
+            top: 0; left: 0;
+            width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            backdrop-filter: blur(6px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 9999;
+            animation: fadeIn 0.3s ease;
+        }
+        @keyframes fadeIn {
+            from{opacity:0;}
+            to{opacity:1;}
+        }
+        .modal-content {
+            background: linear-gradient(135deg, #2d0c0c 0%, #6c2f1a 100%);
+            border: 2px solid #c42e2e;
+            border-radius: 20px;
+            width: 90%;
+            max-width: 520px;
+            padding: 35px;
+            color: #ffe0e0;
+            position: relative;
+            box-shadow: 0 0 50px rgba(255, 0, 0, 0.158);
+            transform: scale(0.95);
+            animation: zoomIn 0.3s ease forwards;
+        }
+        @keyframes zoomIn {
+            from{transform:scale(0.95);opacity:0;}
+            to{transform:scale(1);opacity:1;}
+        }
+        .modal-close {
+            position: absolute;
+            right: 20px; top: 18px;
+            color: #fff;
+            font-size: 24px;
+            cursor: pointer;
+            transition: 0.2s;
+            width: 32px;
+            height: 32px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.1);
+        }
+        .modal-close:hover {
+            color: #d93e3e;
+            background: rgba(255,58,58,0.2);
+        }
+        .modal-content h3 {
+            color: #c42e2e;
+            margin-bottom: 20px;
+            text-align: center;
+            font-size: 22px;
+            text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
+        }
+        .modal-content p {
+            margin: 10px 0;
+            line-height: 1.7;
+            font-size: 15px;
+            white-space: pre-line;
+        }
+
+        @media (max-width: 768px) {
+            .left-box { width: 100%; }
+        }
+        /* 语音控制按钮 */
+.voice-control-btn {
+    width: 100%;
+    padding: 12px;
+    background: #ff3636;
+    color: #fff;
+    font-weight: bold;
+    border: none;
+    border-radius: 10px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: 0.3s;
+}
+.voice-control-btn.listening {
+    background: #ff6666;
+    animation: pulse 1s infinite;
+}
+</style>
+
+<!-- 环境切换按钮 -->
+<div class="env-buttons">
+    <button class="env-btn active" onclick="switchEnv('normal')">🌤 正常环境</button>
+    <button class="env-btn" onclick="switchEnv('smoke')">🌫️ 浓烟环境</button>
+    <button class="env-btn" onclick="switchEnv('rain')">🌧️ 小雨环境</button>
+</div>
+
+<div id="controlSystem">
+  <div class="app">
+    <div class="container">
+      <div class="wrap-col">
+        <div class="col-left">
+          
+          <div class="help-box">
+            <h2>📖 使用说明</h2>
+            <ul>
+              <li>按住【前进/后退】：沿车头朝向移动，松开即停</li>
+              <li>按住【原地左转/右转】：原地旋转调整方向</li>
+              <li>左移/右移：整体平移，不改变朝向</li>
+              <li>喷水开关控制水炮喷射</li>
+              <li>急停：原地立即停止</li>
+              <li>复位：回到中心初始位置</li>
+              <li><strong>点击场景任意地面 → 生成火焰 + 自动灭火</strong></li>
+              <li><strong>点击生成火焰 → 机器人自动就近前往灭火</strong></li>
+              <li>到达火焰范围内自动喷水，灭火后自动前往下一个火焰</li>
+              <li>火焰数量 ≥5 自动触发高温报警</li>
+              <li>喷水对准火焰3秒自动灭火</li>
+              <li>语音控制点击可对机器人做出指令(前进、后退、向左移动、向右移动、左转、右转，复位、急停、喷水)</li>
+            </ul>
+          </div>
+          <div class="robot-scene" id="controlScene">
+            <div class="fire-scene-bg"></div>
+            <div class="fire-flicker"></div>
+            <div class="smoke-layer"></div>
+            <div class="rain-layer"></div>
+            <div class="scene-ground"></div>
+            <div class="fire-robot" id="controlRobot">
+              <div class="robot-sensor-top">
+                <div class="sensor-eye eye-L"></div>
+                <div class="sensor-eye eye-R"></div>
+              </div>
+              <div class="water-cannon-real" id="controlCannon">
+                <div class="cannon-nozzle"></div>
+                <!-- ✅ 扇形水柱 -->
+                <div class="water-fan-group">
+                  <div class="water-fan fan1"></div>
+                  <div class="water-fan fan2"></div>
+                  <div class="water-fan fan3"></div>
+                  <div class="water-fan fan4"></div>
+                </div>
+              </div>
+              <div class="robot-body">
+                <div class="body-fin fin1"></div>
+                <div class="body-fin fin2"></div>
+                <div class="body-fin fin3"></div>
+                <div class="body-fin fin4"></div>
+                消防机器人<br>淼淼
+              </div>
+              <div class="track-left" id="controlTrackL">
+                <div class="track-wheel"></div><div class="track-wheel"></div>
+                <div class="track-wheel"></div><div class="track-wheel"></div>
+              </div>
+              <div class="track-right" id="controlTrackR">
+                <div class="track-wheel"></div><div class="track-wheel"></div>
+                <div class="track-wheel"></div><div class="track-wheel"></div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="col-right">
+          <!-- 语音控制按钮 -->
+          <button class="voice-control-btn" id="voiceControlBtn" onclick="toggleVoiceControl()">🎤 语音控制</button>
+          <div class="data-panel">
+            <div class="data-item">
+              <span class="data-label">环境温度：</span>
+              <span id="controlTemp" class="data-value text-green">42℃</span>
+            </div>
+            <div class="data-item">
+              <span class="data-label">机身壳温：</span>
+              <span id="controlBodyTemp" class="data-value text-green">38℃</span>
+            </div>
+            <div class="data-item">
+              <span class="data-label">可燃气体：</span>
+              <span id="controlGas" class="data-value text-green">正常</span>
+            </div>
+            <div class="data-item">
+              <span class="data-label">设备状态：</span>
+              <span id="controlDevState" class="data-value text-green">在线正常</span>
+            </div>
+            <div class="data-item">
+              <span class="data-label">通信信号：</span>
+              <span id="controlSignal" class="data-value text-blue">强度优秀</span>
+            </div>
+            <div class="data-item">
+              <span class="data-label">剩余电量：</span>
+              <span id="controlPower" class="data-value text-blue">78%</span>
+            </div>
+          </div>
+          <div class="ctrl-panel">
+            <!-- 原理弹窗 -->
+            <div class="ctrl-popup" id="ctrlPopup">
+              <div class="popup-title" id="popupTitle">原理介绍</div>
+              <div class="popup-content" id="popupContent">内容</div>
+              <button class="close-popup" onclick="closePopup()">关闭</button>
+            </div>
+
+            <div>
+              <div class="ctrl-title">工业遥控器</div>
+              <div class="dir-grid">
+                <button class="dir-btn" id="controlForward" onclick="showPopup('前进工作原理',principleMap.forward)">前进</button>
+                <button class="dir-btn" id="controlLeft" onclick="showPopup('左转工作原理',principleMap.left)">原地左转</button>
+                <button class="dir-btn" id="controlRight" onclick="showPopup('右转工作原理',principleMap.right)">原地右转</button>
+                <button class="dir-btn" id="controlMoveLeft" onclick="showPopup('左移工作原理',principleMap.moveLeft)">左移</button>
+                <button class="dir-btn stop-btn" id="controlStop" onclick="showPopup('急停工作原理',principleMap.stop)">急停</button>
+                <button class="dir-btn" id="controlMoveRight" onclick="showPopup('右移工作原理',principleMap.moveRight)">右移</button>
+                <button class="dir-btn" id="controlBackward" onclick="showPopup('后退工作原理',principleMap.backward)">后退</button>
+                <button class="func-btn water-btn" id="controlWater" onclick="showPopup('喷水工作原理',principleMap.water)">喷水开关</button>
+                <button class="func-btn reset-btn" id="controlReset" onclick="showPopup('复位工作原理',principleMap.reset)">复位</button>
+              </div>
+              <div class="func-grid" style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
+                <button class="func-btn fire-btn" id="createFireBtn" onclick="showPopup('生成火焰原理',principleMap.createFire)">🔥 生成火焰(自动灭火)</button>
+                <button class="func-btn clear-fire-btn" id="clearFireBtn" onclick="showPopup('清空火焰原理',principleMap.clearFire)">🗑️ 清空火焰</button>
+              </div>
+              <div class="state-text">状态：<span id="controlRunState">待机</span></div>
+            </div>
+            <div>
+              <div class="log-header" id="logToggleBtn">
+                <span>通信日志</span>
+                <span class="log-toggle">▼ 收起</span>
+              </div>
+              <div class="log-box" id="controlLog"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+// 真实报警音频
+const alarmAudio = new Audio('images/jingbao.mp3');
+alarmAudio.loop = true;
+
+// 火焰燃烧音效
+const fireBurnAudio = new Audio('https://assets.mixkit.co/sfx/preview/mixkit-fire-camp-burning-1238.mp3');
+fireBurnAudio.loop = true;
+fireBurnAudio.volume = 0.4;
+// 自己录制的机器人童声开机语音
+const robotVoice = new Audio('images/start.mp3');
+robotVoice.volume = 1.0;
+const voiceSafe = new Audio('images/anquan.mp3');
+voiceSafe.volume = 1;
+// ===================== 开机语音 =====================
+function startRobot(){
+    robotVoice.currentTime = 0;
+    robotVoice.play();
+    log2("淼淼已开机，等待指令！", 'log-warn');
+    runState2.textContent = "淼淼已启动";
+}
+
+
+// ===================== 弹窗控制 =====================
+/*const ctrlPopup = document.getElementById('ctrlPopup');
+const popupTitle = document.getElementById('popupTitle');
+const popupContent = document.getElementById('popupContent');
+
+function showPopup(title, content) {
+    popupTitle.innerText = title;
+    popupContent.innerText = content;
+    ctrlPopup.classList.add('show');
+}
+function closePopup() {
+    ctrlPopup.classList.remove('show');
+}*/
+
+// 原理说明库
+/*const principleMap = {
+    forward: "前进原理：机器人内置耐高温防爆驱动电机，通过履带式差速传动实现平稳前进，履带增大接地面积，适应火场崎岖路面，防止打滑。",
+    backward: "后退原理：通过电机反向旋转，履带反向传动实现后退动作，后退速度与前进一致，保证火场操作稳定安全。",
+    left: "左转原理：右侧履带正向转动、左侧履带静止，实现原地左转，无需转弯半径，适合狭窄空间灵活转向。",
+    right: "右转原理：左侧履带正向转动、右侧履带静止，实现原地右转，360°灵活转向，快速调整灭火方向。",
+    moveLeft: "左移原理：左右履带差速同步侧向驱动，机器人整体横向平移，不改变车头朝向，精准调整位置。",
+    moveRight: "右移原理：左右履带差速同步侧向驱动，实现横向右移，适用于精准靠近火源进行灭火。",
+    water: "喷水原理：机器人搭载高压消防水泵，将水/泡沫加压后通过水炮喷射，射程可达20-80米，实现远距离灭火。",
+    stop: "急停原理：遥控器发送急停指令，机器人立即切断动力输出，所有电机停止运转，实现瞬间制动，防止危险。",
+    reset: "复位原理：控制系统自动将机器人坐标、角度恢复初始状态，传感器与水炮同步复位，重新进入待命模式。",
+    createFire: "火焰生成：模拟火灾场景，机器人自动启动热成像探测，识别火源位置并规划最优灭火路径。",
+    clearFire: "清空火焰：模拟火灾扑灭完成，机器人关闭水泵，停止喷水，环境监测数据恢复正常。"
+};*/
+
+// 语音合成 - 消防员铿锵有力刚毅男声
+function speakText(text) {
+    let utter = new SpeechSynthesisUtterance(text);
+    utter.lang = 'zh-CN';
+    utter.rate = 0.92;
+    utter.pitch = 0.85;
+    utter.volume = 1.0;
+    speechSynthesis.speak(utter);
+}
+
+// 日志折叠
+const logBox = document.getElementById('controlLog');
+const logToggleBtn = document.getElementById('logToggleBtn');
+const logToggleText = logToggleBtn.querySelector('.log-toggle');
+let logCollapsed = false;
+function toggleLog() {
+  logCollapsed = !logCollapsed;
+  logBox.classList.toggle('collapsed', logCollapsed);
+  logToggleText.textContent = logCollapsed ? '▲ 展开' : '▼ 收起';
+}
+logToggleBtn.onclick = toggleLog;
+toggleLog();
+
+const robot2 = document.getElementById('controlRobot');
+const trackL2 = document.getElementById('controlTrackL');
+const trackR2 = document.getElementById('controlTrackR');
+const logBox2 = document.getElementById('controlLog');
+const runState2 = document.getElementById('controlRunState');
+const scene = document.getElementById('controlScene');
+const tempEl = document.getElementById('controlTemp');
+const bodyTempEl = document.getElementById('controlBodyTemp');
+const gasEl = document.getElementById('controlGas');
+const devStateEl = document.getElementById('controlDevState');
+
+let angle2 = 0;
+let x2 = 0, y2 = 0;
+let moveTimer2 = null, rotateTimer2 = null;
+let checkWaterTimer = null;
+
+let waterSpraying = false;
+let sprayTimers = new Map();
+
+// 自动导航变量
+let navTargetX = null;
+let navTargetY = null;
+let navRunning = false;
+let navInterval = null;
+const NAV_SPEED = 2.2;
+const ANGLE_SPEED = 1.5;
+const STOP_DISTANCE = 60;
+
+// 自动灭火任务
+let autoFireTaskRunning = false;
+let currentTargetFire = null;
+
+// 生成点击标记
+function createTargetMark(x,y){
+  let old = document.querySelector('.click-target-mark');
+  if(old) old.remove();
+  let mark = document.createElement('div');
+  mark.className = 'click-target-mark';
+  mark.style.left = x + 'px';
+  mark.style.top = y + 'px';
+  scene.appendChild(mark);
+}
+
+function log2(msg, type = 'log-send'){
+  let d = document.createElement('div');
+  d.className = type;
+  d.innerHTML = `[${new Date().toLocaleTimeString()}] ${msg}`;
+  logBox2.appendChild(d);
+  logBox2.scrollTop = logBox2.scrollHeight;
+}
+function updateRobot2(){
+  robot2.style.transform = `translate(calc(-50% + ${x2}px), calc(-50% + ${y2}px)) rotate(${angle2}deg)`;
+}
+function stopAll2(){
+  clearInterval(moveTimer2);
+  clearInterval(rotateTimer2);
+  clearInterval(navInterval);
+  moveTimer2 = null;
+  rotateTimer2 = null;
+  navInterval = null;
+  navRunning = false;
+  navTargetX = null;
+  navTargetY = null;
+  trackL2.classList.remove('track-active-L');
+  trackR2.classList.remove('track-active-R');
+  document.querySelectorAll('#controlSystem .dir-btn').forEach(b=>b.classList.remove('active'));
+}
+
+// 开启喷水
+function startWater(){
+  if(waterSpraying) return;
+  robot2.classList.add('water-on');
+  waterSpraying = true;
+  runState2.textContent = '🔥 自动喷水灭火中';
+  log2('到达火焰60px范围，自动开启喷水');
+  if(!checkWaterTimer){
+    checkWaterTimer = setInterval(checkWaterOnFire, 200);
+  }
+}
+
+// 关闭喷水
+function stopWater(){
+  if(!waterSpraying) return;
+  robot2.classList.remove('water-on');
+  waterSpraying = false;
+  runState2.textContent = '✅ 喷水关闭';
+  log2('火焰已灭，关闭喷水');
+}
+
+// 实时播放/停止燃烧音效
+function updateFireSound() {
+  const fires = document.querySelectorAll('#controlSystem .fire');
+  if(fires.length > 0){
+    if(fireBurnAudio.paused) fireBurnAudio.play().catch(()=>{});
+  }else{
+    fireBurnAudio.pause();
+    fireBurnAudio.currentTime = 0;
+  }
+}
+
+// 实时报警 + 控制任务弹窗只在全部火焰熄灭后弹出
+function updateAlarmStatus() {
+  const fireCount = document.querySelectorAll('#controlSystem .fire').length;
+  updateFireSound();
+  
+  // 火焰 >=5 播放警告声
+  if (fireCount >= 5) {
+    scene.classList.add('alarm-high');
+    if(!waterSpraying) runState2.textContent = '🔥 高温警告中';
+    if(alarmAudio.paused){
+      alarmAudio.play().catch(err => {});
+    }
+  } else {
+    scene.classList.remove('alarm-high');
+    alarmAudio.pause();
+    alarmAudio.currentTime = 0;
+
+    if(fireCount === 0){
+      runState2.textContent = '✅ 火灾已完全扑灭';
+      log2('所有火焰已扑灭，环境恢复正常', 'log-warn');
+      /*speakText("火焰已全部熄灭，已安全");*/
+      voiceSafe.currentTime = 0;
+voiceSafe.play();
+      stopWater();
+      autoFireTaskRunning = false;
+      currentTargetFire = null;
+      
+      let modal = document.createElement('div');
+      modal.className = 'task-alert-modal';
+      modal.innerHTML = `
+          <div class="task-alert-box">
+              <h3>✅ 消防任务圆满完成</h3>
+              <button class="task-alert-btn" onclick="this.parentElement.parentElement.remove()">确认</button>
+          </div>
+      `;
+      document.body.appendChild(modal);
+      modal.style.display = 'flex';
+    }else{
+      if(!waterSpraying && !navRunning) runState2.textContent = '✅ 报警已解除';
+    }
+  }
+}
+
+// 动态温度 = 火焰数量 + 火焰大小综合计算
+function updateDataPanelVisual() {
+  const fires = Array.from(document.querySelectorAll('#controlSystem .fire'));
+  const fireCount = fires.length;
+
+  let totalHeat = fireCount * 16;
+  fires.forEach(fire=>{
+    const rect = fire.getBoundingClientRect();
+    const sizeScore = rect.width * rect.height * 0.02;
+    totalHeat += sizeScore * 0.12;
+  });
+
+  let temp = Math.min(42 + totalHeat, 190);
+  let bodyTemp = Math.min(38 + totalHeat * 0.6, 120);
+
+  tempEl.textContent = Math.round(temp) + '℃';
+  bodyTempEl.textContent = Math.round(bodyTemp) + '℃';
+
+  tempEl.className = 'data-value ' + (temp>=100?'text-red':temp>=60?'text-yellow':'text-green');
+  bodyTempEl.className = 'data-value ' + (bodyTemp>=90?'text-red':bodyTemp>=50?'text-yellow':'text-green');
+
+  let gasText = '正常';
+  if(fireCount >=3) gasText = '偏高';
+  if(fireCount >=6) gasText = '危险⚠️';
+  gasEl.textContent = gasText;
+  gasEl.className = 'data-value ' + (gasText=='危险⚠️'?'text-red':gasText=='偏高'?'text-yellow':'text-green');
+
+  let stateText = '在线正常';
+  if(fireCount >=1) stateText = '灭火作业中';
+  if(fireCount >=5) stateText = '高温报警🔥';
+  devStateEl.textContent = stateText;
+  devStateEl.className = 'data-value ' + (stateText.includes('报警')?'text-red':stateText.includes('作业')?'text-blue':'text-green');
+}
+setInterval(updateDataPanelVisual, 600);
+
+// 喷水检测 + 灭火渐变缩小冒烟
+function checkWaterOnFire() {
+  if (!waterSpraying) return;
+  const cannon = document.getElementById('controlCannon');
+  const cannonRect = cannon.getBoundingClientRect();
+
+  document.querySelectorAll('#controlSystem .fire').forEach(fire => {
+    if(!fire.isConnected) {
+      if(sprayTimers.has(fire)){
+        clearTimeout(sprayTimers.get(fire));
+        sprayTimers.delete(fire);
+      }
+      return;
+    }
+    const fireRect = fire.getBoundingClientRect();
+    const cx = cannonRect.left + cannonRect.width / 2;
+    const cy = cannonRect.top + cannonRect.height / 2;
+    const fx = fireRect.left + fireRect.width / 2;
+    const fy = fireRect.top + fireRect.height / 2;
+    const dist = Math.hypot(cx - fx, cy - fy);
+
+    if (dist < 60) {
+      if (!sprayTimers.has(fire)) {
+        sprayTimers.set(fire, setTimeout(() => {
+          fire.classList.add('extinguishing');
+          setTimeout(()=>{
+            fire.remove();
+            log2('✅ 火焰已被水炮扑灭', 'log-warn');
+            updateAlarmStatus();
+            findNearestFireAndGo();
+          },1200);
+        }, 2500));
+      }
+    } else {
+      if (sprayTimers.has(fire)) {
+        clearTimeout(sprayTimers.get(fire));
+        sprayTimers.delete(fire);
+      }
+    }
+  });
+}
+
+// 自动导航：水炮对准火焰，距离60px停止
+function startAutoNav(targetX, targetY){
+  stopAll2();
+  navRunning = true;
+  trackL2.classList.add('track-active-L');
+  trackR2.classList.add('track-active-R');
+  runState2.textContent = '🚗 自动导航行进中';
+  log2('水炮对准火焰，自动前往60px灭火位置');
+
+  navInterval = setInterval(()=>{
+    if(!navRunning) return;
+
+    const rect = scene.getBoundingClientRect();
+    const robotRect = robot2.getBoundingClientRect();
+    const cannon = document.getElementById('controlCannon');
+    const cannonRect = cannon.getBoundingClientRect();
+
+    const cx = cannonRect.left + cannonRect.width/2 - rect.left;
+    const cy = cannonRect.top + cannonRect.height/2 - rect.top;
+
+    const dx = targetX - cx;
+    const dy = targetY - cy;
+    const dist = Math.hypot(dx, dy);
+
+    if(dist < STOP_DISTANCE){
+      stopAll2();
+      runState2.textContent = '✅ 已到达灭火位置';
+      log2('水炮正对火焰，准备喷水');
+      if(autoFireTaskRunning && currentTargetFire) startWater();
+      return;
+    }
+
+    let targetAngle = Math.atan2(dx, -dy) * 180 / Math.PI;
+    let diff = targetAngle - angle2;
+    while(diff > 180) diff -= 360;
+    while(diff < -180) diff += 360;
+
+    if(Math.abs(diff) > 1.5){
+      angle2 += diff > 0 ? ANGLE_SPEED : -ANGLE_SPEED;
+    }else{
+      let rad = angle2 * Math.PI / 180;
+      x2 += Math.sin(rad) * NAV_SPEED;
+      y2 -= Math.cos(rad) * NAV_SPEED;
+    }
+    updateRobot2();
+  },30);
+}
+
+// 场景点击事件：生成火焰 + 自动导航灭火
+scene.addEventListener('click',function(e){
+  autoFireTaskRunning = true;
+  const rect = scene.getBoundingClientRect();
+  const pageX = e.clientX - rect.left;
+  const pageY = e.clientY - rect.top;
+
+  createTargetMark(pageX, pageY);
+
+  let fire = document.createElement('div');
+  fire.className = 'fire';
+  let size = Math.random()*0.5 + 0.8;
+  let w = Math.round(28*size);
+  let h = Math.round(40*size);
+  fire.style.width = w+'px';
+  fire.style.height = h+'px';
+
+  let flame = document.createElement('div');
+  flame.className = 'fire-flame';
+  flame.style.width = Math.round(18*size)+'px';
+  flame.style.height = Math.round(32*size)+'px';
+
+  let smoke = document.createElement('div');
+  smoke.className = 'fire-smoke';
+  smoke.style.width = Math.round(12*size)+'px';
+  smoke.style.height = Math.round(18*size)+'px';
+  smoke.style.bottom = Math.round(28*size)+'px';
+
+  fire.appendChild(flame);
+  fire.appendChild(smoke);
+  fire.style.left = pageX + 'px';
+  fire.style.bottom = (scene.clientHeight - pageY) + 'px';
+  scene.appendChild(fire);
+
+  updateAlarmStatus();
+  log2('点击地面生成火焰，机器人水炮对准灭火', 'log-warn');
+  setTimeout(findNearestFireAndGo, 500);
+});
+
+// 就近寻路：以水炮为中心
+function findNearestFireAndGo(){
+  let fires = Array.from(document.querySelectorAll('#controlSystem .fire'));
+  if(fires.length === 0){
+    autoFireTaskRunning = false;
+    currentTargetFire = null;
+    stopWater();
+    updateAlarmStatus();
+    return;
+  }
+
+  const rect = scene.getBoundingClientRect();
+  const cannon = document.getElementById('controlCannon');
+  const cannonRect = cannon.getBoundingClientRect();
+  const cx = cannonRect.left + cannonRect.width/2 - rect.left;
+  const cy = cannonRect.top + cannonRect.height/2 - rect.top;
+
+  let nearFire = null;
+  let minDist = 999999;
+  for(let fire of fires){
+    const r = fire.getBoundingClientRect();
+    const fx = r.left + r.width/2 - rect.left;
+    const fy = r.top + r.height/2 - rect.top;
+    const d = Math.hypot(fx - cx, fy - cy);
+    if(d < minDist){
+      minDist = d;
+      nearFire = fire;
+    }
+  }
+
+  if(!nearFire) return;
+  currentTargetFire = nearFire;
+  const r = nearFire.getBoundingClientRect();
+  const tx = r.left + r.width/2 - rect.left;
+  const ty = r.top + r.height/2 - rect.top;
+  createTargetMark(tx, ty);
+  startAutoNav(tx, ty);
+}
+
+// 手动按键控制
+document.getElementById('controlForward').onmousedown=()=>{
+  autoFireTaskRunning = false;
+  stopAll2();document.getElementById('controlForward').classList.add('active');
+  trackL2.classList.add('track-active-L');trackR2.classList.add('track-active-R');
+  runState2.textContent='前进';log2('前进');
+  moveTimer2=setInterval(()=>{
+    let rad=angle2*Math.PI/180;
+    x2+=Math.sin(rad)*2.5;y2-=Math.cos(rad)*2.5;updateRobot2();
+  },30);
+};
+document.getElementById('controlForward').onmouseup=stopAll2;
+document.getElementById('controlForward').onmouseleave=stopAll2;
+
+document.getElementById('controlBackward').onmousedown=()=>{
+  autoFireTaskRunning = false;
+  stopAll2();document.getElementById('controlBackward').classList.add('active');
+  trackL2.classList.add('track-active-L');trackR2.classList.add('track-active-R');
+  runState2.textContent='后退';log2('后退');
+  moveTimer2=setInterval(()=>{
+    let rad=angle2*Math.PI/180;
+    x2-=Math.sin(rad)*2.5;y2+=Math.cos(rad)*2.5;updateRobot2();
+  },30);
+};
+document.getElementById('controlBackward').onmouseup=stopAll2;
+document.getElementById('controlBackward').onmouseleave=stopAll2;
+
+document.getElementById('controlLeft').onmousedown=()=>{
+  autoFireTaskRunning = false;
+  stopAll2();document.getElementById('controlLeft').classList.add('active');
+  trackR2.classList.add('track-active-R');runState2.textContent='左转';log2('原地左转');
+  rotateTimer2=setInterval(()=>{angle2-=1.8;updateRobot2();},30);
+};
+document.getElementById('controlLeft').onmouseup=stopAll2;
+document.getElementById('controlLeft').onmouseleave=stopAll2;
+
+document.getElementById('controlRight').onmousedown=()=>{
+  autoFireTaskRunning = false;
+  stopAll2();document.getElementById('controlRight').classList.add('active');
+  trackL2.classList.add('track-active-L');runState2.textContent='右转';log2('原地右转');
+  rotateTimer2=setInterval(()=>{angle2+=1.8;updateRobot2();},30);
+};
+document.getElementById('controlRight').onmouseup=stopAll2;
+document.getElementById('controlRight').onmouseleave=stopAll2;
+
+// 左移 = 机器人自身左侧移动
+document.getElementById('controlMoveLeft').onmousedown=function(){
+  autoFireTaskRunning = false;
+  stopAll2();
+  this.classList.add('active');
+  runState2.textContent='左移';
+  moveTimer2=setInterval(()=>{
+    let rad = (angle2 - 90) * Math.PI / 180;
+    x2 += Math.sin(rad) * 1.5;
+    y2 -= Math.cos(rad) * 1.5;
+    updateRobot2();
+  },30);
+};
+
+
+document.getElementById('controlMoveLeft').onmouseup=stopAll2;
+document.getElementById('controlMoveLeft').onmouseleave=stopAll2;
+
+// 右移 = 机器人自身右侧移动
+document.getElementById('controlMoveRight').onmousedown=function(){
+  autoFireTaskRunning = false;
+  stopAll2();
+  this.classList.add('active');
+  runState2.textContent='右移';
+  moveTimer2=setInterval(()=>{
+    let rad = (angle2 + 90) * Math.PI / 180;
+    x2 += Math.sin(rad) * 1.5;
+    y2 -= Math.cos(rad) * 1.5;
+    updateRobot2();
+  },30);
+};
+document.getElementById('controlMoveRight').onmouseup=stopAll2;
+document.getElementById('controlMoveRight').onmouseleave=stopAll2;
+
+// 喷水开关
+document.getElementById('controlWater').onclick=()=>{
+  autoFireTaskRunning = false;
+  robot2.classList.toggle('water-on');
+  waterSpraying = robot2.classList.contains('water-on');
+  runState2.textContent=waterSpraying?'喷水开启':'喷水关闭';
+  log2(waterSpraying?'开启喷水':'关闭喷水');
+  if(waterSpraying){
+    if(!checkWaterTimer){
+      checkWaterTimer = setInterval(checkWaterOnFire, 200);
+    }
+  }
+};
+
+// 急停：原地停止
+document.getElementById('controlStop').onclick=()=>{
+  autoFireTaskRunning = false;
+  stopAll2();
+  stopWater();
+  runState2.textContent='⏹️ 已原地急停';
+  log2('原地紧急停止','log-warn');
+};
+
+// 复位：回到中心
+document.getElementById('controlReset').onclick=()=>{
+  autoFireTaskRunning = false;
+  currentTargetFire = null;
+  stopAll2();
+  stopWater();
+  
+  x2 = 0;
+  y2 = 0;
+  angle2 = 0;
+  updateRobot2();
+  
+  sprayTimers.clear();
+  sprayTimers = new Map();
+  
+  let mark = document.querySelector('.click-target-mark');
+  if(mark) mark.remove();
+
+  runState2.textContent='🔄 已复位至初始位置';
+  log2('机器人已复位到中心初始位置','log-warn');
+  alarmAudio.pause();
+  alarmAudio.currentTime = 0;
+};
+
+// 生成火焰 + 自动就近灭火
+document.getElementById('createFireBtn').onclick = () => {
+  autoFireTaskRunning = true;
+  const count = Math.floor(Math.random() * 4) + 2;
+  for (let i = 0; i < count; i++) {
+    let fire = document.createElement('div');
+    fire.className = 'fire';
+    let size = Math.random()*0.5 + 0.8;
+    let w = Math.round(28*size);
+    let h = Math.round(40*size);
+    fire.style.width = w+'px';
+    fire.style.height = h+'px';
+
+    let flame = document.createElement('div');
+    flame.className = 'fire-flame';
+    flame.style.width = Math.round(18*size)+'px';
+    flame.style.height = Math.round(32*size)+'px';
+
+    let smoke = document.createElement('div');
+    smoke.className = 'fire-smoke';
+    smoke.style.width = Math.round(12*size)+'px';
+    smoke.style.height = Math.round(18*size)+'px';
+    smoke.style.bottom = Math.round(28*size)+'px';
+
+    fire.appendChild(flame);fire.appendChild(smoke);
+    let pos;let isValid=false;
+    while(!isValid){
+      const w=scene.clientWidth,h=scene.clientHeight;
+      const left=Math.random()*(w-40)+20;
+      const bottom=Math.random()*(h*0.5)+10;
+      const dx=left-w/2, dy=(h-bottom)-h/2;
+      if(Math.hypot(dx,dy)>100){
+        pos={left,bottom};isValid=true;
+      }
+    }
+    fire.style.left=pos.left+'px';
+    fire.style.bottom=pos.bottom+'px';
+    scene.appendChild(fire);
+  }
+  const fc=document.querySelectorAll('#controlSystem .fire').length;
+  runState2.textContent=`已生成 ${count} 处火源，开始自动灭火`;
+  log2(`生成 ${count} 处火源，当前总数：${fc}，启动自动灭火`,'log-warn');
+  updateAlarmStatus();
+  setTimeout(findNearestFireAndGo, 500);
+};
+
+// 清空火焰
+document.getElementById('clearFireBtn').onclick = () => {
+  autoFireTaskRunning = false;
+  currentTargetFire = null;
+  document.querySelectorAll('#controlSystem .fire').forEach(f=>f.remove());
+  sprayTimers.clear();
+  sprayTimers=new Map();
+  stopWater();
+  runState2.textContent='已清空所有火焰';
+  log2('已清除全部火源');
+  updateAlarmStatus();
+};
+
+log2('控制系统已启动，点击场景地面可生成火焰自动灭火');
+document.body.addEventListener('click',()=>{
+    speechSynthesis.resume();
+},{once:true});
+
+updateDataPanelVisual();
+
+// ===================== 环境模拟切换 =====================
+const smokeLayer = document.querySelector('.smoke-layer');
+const rainLayer = document.querySelector('.rain-layer');
+const fireFlicker = document.querySelector('.fire-flicker');
+let currentEnv = 'normal';
+
+function switchEnv(mode) {
+    currentEnv = mode;
+    document.querySelectorAll('.env-btn').forEach(b => b.classList.remove('active'));
+    document.querySelector(`.env-btn[onclick="switchEnv('${mode}')"]`).classList.add('active');
+
+    smokeLayer.style.opacity = 0;
+    rainLayer.style.opacity = 0;
+    fireFlicker.style.opacity = 0;
+
+    if (mode === 'normal') {
+        fireFlicker.style.opacity = 0.15;
+    } else if (mode === 'smoke') {
+        smokeLayer.style.opacity = 1;
+        fireFlicker.style.opacity = 0.15;
+    } else if (mode === 'rain') {
+        rainLayer.style.opacity = 0.4;
+        fireFlicker.style.opacity = 0.1;
+    }
+}
+switchEnv('normal');
+</script>
+
+<script>
+// ==================== 🗣️ 语音控制 ====================
+const voiceControlBtn = document.getElementById('voiceControlBtn');
+let recognition = null;
+let isListening = false;
+
+function toggleVoiceControl() {
+    if (!('webkitSpeechRecognition' in window && 'SpeechSynthesis' in window)) {
+        alert('你的浏览器不支持语音控制功能');
+        return;
+    }
+    if (isListening) {
+        stopListen();
+    } else {
+        startListen();
+    }
+}
+
+function startListen() {
+    isListening = true;
+    voiceControlBtn.textContent = '🎙️ 正在听...';
+    voiceControlBtn.classList.add('listening');
+    recognition = new webkitSpeechRecognition();
+    recognition.lang = 'zh-CN';
+    recognition.continuous = true;
+    recognition.interimResults = false;
+
+    recognition.onresult = (e) => {
+        let text = e.results[e.results.length - 1][0].transcript.trim();
+        doVoiceAction(text);
+    };
+    recognition.onend = () => {
+        if (isListening) recognition.start();
+    };
+    recognition.start();
+}
+
+function stopListen() {
+    isListening = false;
+    voiceControlBtn.textContent = '🎤 语音控制';
+    voiceControlBtn.classList.remove('listening');
+    if (recognition) recognition.stop();
+}
+
+function doVoiceAction(text) {
+    let t = text.replace(/\s+/g, '');
+
+    // 语音控制指令
+    if (t.includes('前进')) {
+        document.getElementById('controlForward').onmousedown();
+        setTimeout(() => document.getElementById('controlForward').onmouseup(), 1200);
+    } else if (t.includes('后退')) {
+        document.getElementById('controlBackward').onmousedown();
+        setTimeout(() => document.getElementById('controlBackward').onmouseup(), 1200);
+    } else if (t.includes('左转')) {
+        document.getElementById('controlLeft').onmousedown();
+        setTimeout(() => document.getElementById('controlLeft').onmouseup(), 800);
+    } else if (t.includes('右转')) {
+        document.getElementById('controlRight').onmousedown();
+        setTimeout(() => document.getElementById('controlRight').onmouseup(), 800);
+    } else if (t.includes('左移')) {
+        document.getElementById('controlMoveLeft').onmousedown();
+        setTimeout(() => document.getElementById('controlMoveLeft').onmouseup(), 800);
+    } else if (t.includes('右移')) {
+        document.getElementById('controlMoveRight').onmousedown();
+        setTimeout(() => document.getElementById('controlMoveRight').onmouseup(), 800);
+    } 
+    else if (t.includes('喷水')) {
+        document.getElementById('controlWater').onclick();
+    } else if (t.includes('停止') || t.includes('急停')) {
+        document.getElementById('controlStop').onclick();
+    } else if (t.includes('复位')) {
+        document.getElementById('controlReset').onclick();
+    } else if (t.includes('生成火焰')) {
+        document.getElementById('createFireBtn').onclick();
+    } else if (t.includes('清空火焰')) {
+        document.getElementById('clearFireBtn').onclick();
+    }
+}
+</script>
+
+<script>
+// ==================== 🎤 声音控制全息机器人喷水 ====================
+const holoRobot = document.querySelector('.hologram-robot');
+let audioContext, analyser, microphone;
+
+async function initVoiceControl() {
+  try {
+    const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+    audioContext = new (window.AudioContext || window.webkitAudioContext)();
+    analyser = audioContext.createAnalyser();
+    analyser.fftSize = 128;
+    microphone = audioContext.createMediaStreamSource(stream);
+    microphone.connect(analyser);
+
+    detectVoice();
+  } catch (err) {}
+}
+
+function detectVoice() {
+  const dataArray = new Uint8Array(analyser.frequencyBinCount);
+  function loop() {
+    requestAnimationFrame(loop);
+    analyser.getByteFrequencyData(dataArray);
+    let sum = dataArray.reduce((a, b) => a + b, 0);
+    let avg = sum / dataArray.length;
+    if (avg > 15) {
+      holoRobot.classList.add('holo-water-on');
+    } else {
+      holoRobot.classList.remove('holo-water-on');
+    }
+  }
+  loop();
+}
+
+// 页面点击后授权麦克风
+document.addEventListener('click', initVoiceControl, { once: true });
+</script>
+
+
+<script>
+let slideIndex = 0;
+function showSlide(n) {
+    let slides = document.querySelectorAll('.carousel-images img');
+    let dots = document.querySelectorAll('.dot');
+    if (n >= slides.length) slideIndex = 0;
+    if (n < 0) slideIndex = slides.length - 1;
+    slides.forEach(s => s.classList.remove('active'));
+    dots.forEach(d => d.classList.remove('active'));
+    slides[slideIndex].classList.add('active');
+    dots[slideIndex].classList.add('active');
+}
+function nextSlide() { showSlide(++slideIndex); }
+function prevSlide() { showSlide(--slideIndex); }
+function goToSlide(n) { slideIndex = n; showSlide(slideIndex); }
+
+function openModal(src) {
+    let modal = document.createElement('div');
+    modal.className = 'img-modal show';
+    let img = document.createElement('img');
+    img.src = src;
+    img.className = 'modal-content';
+    let close = document.createElement('button');
+    close.className = 'close-modal';
+    close.innerText = '✕';
+    close.onclick = () => document.body.removeChild(modal);
+    modal.appendChild(img);
+    modal.appendChild(close);
+    modal.onclick = (e) => { if (e.target === modal) document.body.removeChild(modal); }
+    document.body.appendChild(modal);
+}
+</script>
+        </div>
+
+        <!-- 完整科普内容 -->
+        <div class="glass-card" id="principle">
+            <h2>二、耐高温消防机器人核心工作原理</h2>
+            <p>耐高温消防机器人属于<strong>特种机器人</strong>，专为火灾救援设计，可进入高温、浓烟、有毒、易爆等危险环境，<br>代替消防员完成侦察、灭火、搜救、气体监测等任务，有效保障救援人员安全。</p>
+            
+            <div class="process-box">
+                <div class="process-step">
+                    <strong>1.远程遥控操控</strong>
+                    <p>无线远距离控制，<br>远离危险区域</p>
+                </div>
+                <div class="process-step">
+                    <strong>2.环境感知探测</strong>
+                    <p>摄像头、热成像、<br>气体传感器采集数据</p>
+                </div>
+                <div class="process-step">
+                    <strong>3.耐高温防护</strong>
+                    <p>多层隔热结构，<br>抵御高温炙烤</p>
+                </div>
+                <div class="process-step">
+                    <strong>4.灭火执行</strong>
+                    <p>水炮喷射、<br>泡沫喷射、<br>破障作业</p>
+                </div>
+                <div class="process-step">
+                    <strong>5.数据回传</strong>
+                    <p>实时画面与环境数据<br>同步传输</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="glass-card" id="type">
+            <h2>三、常见耐高温消防机器人类型<p>点击图片放大查看</p></h2>
+            <div class="explode-view">
+                <div class="explode-item">
+                    <img src="images/robot-fire-5.jpg" onclick="openModal(this.src)" alt="灭火消防机器人">
+                    <h3>灭火消防机器人</h3>
+                    <p>携带水炮进入火场，<br>远距离喷射灭火</p>
+                </div>
+                <div class="explode-item">
+                    <img src="images/robot-fire-6.jpg" onclick="openModal(this.src)" alt="侦察搜救机器人">
+                    <h3>侦察搜救机器人</h3>
+                    <p>热成像穿透浓烟，<br>寻找被困人员位置</p>
+                </div>
+                <div class="explode-item">
+                    <img src="images/robot-fire-7.jpg" onclick="openModal(this.src)" alt="防爆消防机器人">
+                    <h3>防爆消防机器人</h3>
+                    <p>适用于化工、<br>燃气等易燃易爆场景</p>
+                </div>
+                <div class="explode-item">
+                    <img src="images/robot-fire-8.jpg" onclick="openModal(this.src)" alt="破障救援机器人">
+                    <h3>破障救援机器人</h3>
+                    <p>清理障碍、<br>开辟救援通道</p>
+                </div>
+            </div>
+        </div>
+
+        <!--<div class="glass-card" id="component">
+            <h2>四、核心零部件来源/设计/作用详解</h2>
+            <table>
+                <tr>
+                    <th>零部件名称</th>
+                    <th>主要来源品牌</th>
+                    <th>设计特点</th>
+                    <th>核心作用</th>
+                </tr>
+                <tr>
+                    <td>耐高温防爆电机</td>
+                    <td>国产消防专用、<br>防爆认证</td>
+                    <td>耐高温、防爆、<br>防水防尘</td>
+                    <td>提供行走动力，<br>适应极端火场环境</td>
+                </tr>
+                <tr>
+                    <td>红外热成像摄像头</td>
+                    <td>海康威视、<br>大华消防级</td>
+                    <td>穿透浓烟、<br>抗高温干扰</td>
+                    <td>夜间/浓烟中识别<br>火源与被困人员</td>
+                </tr>
+                <tr>
+                    <td>耐高温隔热装甲</td>
+                    <td>军工级复合隔热材料</td>
+                    <td>多层隔热、抗冲击、<br>防辐射热</td>
+                    <td>保护内部元器件，<br>耐受千度高温</td>
+                </tr>
+                <tr>
+                    <td>有毒可燃气体传感器</td>
+                    <td>工业级气体检测模块</td>
+                    <td>快速响应、<br>多气体监测</td>
+                    <td>检测CO、<br>甲烷等，<br>预警爆炸中毒风险</td>
+                </tr>
+                <tr>
+                    <td>高压消防水炮</td>
+                    <td>消防装备专用厂家</td>
+                    <td>可调流量、<br>旋转角度大</td>
+                    <td>远距离喷水、<br>喷射泡沫灭火</p>
+                </tr>
+                <tr>
+                    <td>防爆遥控接收模块</td>
+                    <td>消防无线通信专用</td>
+                    <td>抗干扰、<br>远距离、<br>稳定传输</td>
+                    <td>实现远程操控与图传</td>
+                </tr>
+            </table>
+        </div>-->
+
+        <div class="glass-card" id="photo">
+            <h2>四、耐高温防爆消防机器人原理图剖析<p>点击图片放大查看</p></h2>
+            <div class="explode-view">
+                <div class="explode-item">
+                    <img src="images/robot-fire-9.jpg" onclick="openModal(this.src)" >
+                </div>
+                <div class="explode-item">
+                    <img src="images/robot-fire-10.jpg" onclick="openModal(this.src)">
+                </div>
+                <div class="explode-item">
+                    <img src="images/robot-fire-11.jpg" onclick="openModal(this.src)" >
+                </div>
+                <div class="explode-item">
+                    <img src="images/robot-fire-12.jpg" onclick="openModal(this.src)" >
+                </div>
+            </div>
+            <div style="margin-top:20px;">
+                <h3 style="color:#c42e2e; text-align:center; margin-bottom:10px; font-size:18px;">🔍 点击红色热点查看零件详情</h3>
+                <div class="parts-img-container">
+                    <img src="images/robot-fire-13.jpg" class="parts-img" alt="耐高温防爆消防机器人内部零件图">
+                    <div class="hotspot" style="left:33%; top:11%;" onclick="showPart(1)">1</div>
+                    <div class="hotspot" style="left:34%; top:20%;" onclick="showPart(2)">2</div>
+                    <div class="hotspot" style="left:34%; top:32%;" onclick="showPart(3)">3</div>
+                    <div class="hotspot" style="left:30%; top:90%;" onclick="showPart(4)">4</div>
+                    <div class="hotspot" style="left:30%; top:78%;" onclick="showPart(5)">5</div>
+                    <div class="hotspot" style="left:70%; top:42%;" onclick="showPart(6)">6</div>
+                    <div class="hotspot" style="left:73%; top:50%;" onclick="showPart(7)">7</div>
+                </div>
+            </div>
+           <!-- 美观弹窗 -->
+    <div class="part-modal" id="partModal">
+        <div class="modal-content">
+            <span class="modal-close" onclick="closePartModal()">&times;</span>
+            <h3 id="modalTitle">零件名称</h3>
+            <p id="modalDesc">描述内容</p>
+        </div>
+    </div>
+        </div>
+        
+        <div class="glass-card" id="scenarios">
+            <h2>五、适用场景与优势</h2>
+            <p>✅ 高层、地下车库、隧道等密闭空间火灾</p>
+            <p>✅ 石化工厂、油罐区、燃气泄漏高危场景</p>
+            <p>✅ 易燃易爆危险品爆炸事故救援</p>
+            <p>✅ 浓烟、高温、有毒环境人员无法进入区域</p>
+            <p>✅ 森林火灾、大型仓库、厂房火灾救援</p>
+            <p>✅ 替代消防员进入危险区，实现零伤亡救援</p>
+        </div>
+    </div>
+
+    <div class="img-modal" id="imgModal">
+        <button class="close-modal" onclick="closeModal()">✕</button>
+        <img src="images/" id="modalImg" class="modal-content">
+    </div>
+
+    <script>
+        let current = 0;
+        const imgs = document.querySelectorAll('.carousel-images img');
+        const dots = document.querySelectorAll('.dot');
+        const total = imgs.length;
+
+        setInterval(nextSlide, 3000);
+
+        function nextSlide() {
+            current = (current + 1) % total;
+            updateSlide();
+        }
+
+        function prevSlide() {
+            current = (current - 1 + total) % total;
+            updateSlide();
+        }
+
+        function goToSlide(index) {
+            current = index;
+            updateSlide();
+        }
+
+        function updateSlide() {
+            imgs.forEach((img, i) => {
+                img.classList.toggle('active', i === current);
+            });
+            dots.forEach((dot, i) => {
+                dot.classList.toggle('active', i === current);
+            });
+        }
+
+        const modal = document.getElementById('imgModal');
+        const modalImg = document.getElementById('modalImg');
+
+        function openModal(src) {
+            modalImg.src = src;
+            modal.classList.add('show');
+        }
+
+        function closeModal() {
+            modal.classList.remove('show');
+        }
+
+        modal.onclick = function(e) {
+            if (e.target === modal) closeModal();
+        }
+        // 热点弹窗
+        function showPart(index){
+        let parts = [
+            {
+                name: "1. 高压消防水炮系统",
+                content: "💡 作用：远距离喷水。\n✨ 特点：火场远距离、高精度、高可靠灭火。"
+            },
+            {
+                name: "2. 前端感知",
+                content: "组成：高清可见光摄像头、红外热成像摄像头、气体传感器组、温度传感器、光照/烟雾传感器、避障红外/超声波传感器、麦克风收音模块\n\n📌 工作原理（眼睛、鼻子、皮肤）：图像采集、环境参数检测、信号传输处理、辅助控制联动、环境适应工作。\n💡 作用：环境侦察、实现可视化作业。"
+            },
+            {
+                name: "3. 通讯与控制天线单元",
+                content: "📌 工作原理：\n1、操控端发射无线射频信号\n2、天线接收无线信号，传给车载主控系统\n3、主控解析指令，分别控制行走电机、水炮动力舱、喷淋系统等机构\n4、机器人的视频、环境数据再通过该天线反向发射传回遥控器\n5、形成双向无线通信 闭环控制。\n\n💡 作用：远程无线通讯、控制指令接受、视频数据回传、抗干扰稳定通讯。\n✨ 特点：防水防尘耐高温、信号穿透力强、外置高增益天线、防爆防护结构、抗电磁干扰。"
+            },
+            {
+                name: "4. 动力与防爆系统",
+                content: "📌 工作原理：能源输出、动力驱动传动、防爆隔爆原理、温控与过热保护、防水防尘密封。\n\n💡 作用：行走驱动动力、整机供电能源、防爆安全防护、环境防护。\n✨ 特点：防爆动力舱、全场景驱动、智能温控保护、高防护等级、长续航设计、合规防爆认证。"
+            },
+            {
+                name: "5. 车体防爆外壳",
+                content: "💡 作用：防爆装甲，安全合规通行证。"
+            },
+            {
+                name: "6. 动力舱",
+                content: "📌 工作原理：机械瞄准（眼睛）、高压水流控制（关节）、系统联动（血管）。\n\n💡 作用：水炮的动力与控制中心，高压水流的主通路和控制阀组。\n✨ 特点：双轴云台驱动结构、精准定位控制、水路一体化集成设计、耐高温防爆外壳、远程电动可控、防护可靠性强。"
+            },
+            {
+                name: "7. 辅助喷淋系统",
+                content: "📌 工作原理：供水（动力来源）、控制（大脑中枢）、执行（核心喷头组）、反馈（状态闭环）。\n\n💡 作用：本体隔热降温、设备防护、二次灭火/抑爆、自清洁除烟。\n✨ 特点：全向立体喷淋布局、水雾/水幕双效模式、自动手动双控制、耐高温、整机防护联动性强、防尘自清洁。"
+            }
+        ];
+        let p = parts[index-1];
+        modalTitle.innerText = p.name;
+        modalDesc.innerText = p.content;
+        partModal.style.display = "flex";
+    }
+
+    function closePartModal(){
+        partModal.style.display = "none";
+    }
+</script>
+    </script>
+</body>
+</html>

@@ -1,0 +1,624 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>工业机器人时期 | 自动化革命</title>
+<style>
+/* 全局样式重置与基础配置 —— 深邃明亮质感配色 */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Microsoft Yahei", "Roboto", sans-serif;
+}
+:root {
+    --primary-color: #1BA9F5;
+    --secondary-color: #6C5CE7;
+    --accent-color: #F25C54;
+    --dark-bg: #E4EEF8;
+    --dark-bg-light: #D6E4F5;
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --text-primary: #1E293B;
+    --text-secondary: #334155;
+    --shadow: 0 8px 24px rgba(27, 169, 245, 0.18);
+    --glow: 0 0 20px rgba(27, 169, 245, 0.35);
+    --hologram-glow: 0 0 20px rgba(108, 92, 231, 0.2), 0 0 30px rgba(27, 169, 245, 0.15);
+    --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+body{
+    background: var(--dark-bg);
+    color: var(--text-primary);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(27, 169, 245, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 90% 80%, rgba(108, 92, 231, 0.08) 0%, transparent 25%);
+    background-attachment: fixed;
+}
+
+/* 顶部导航 */
+#top-nav{
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background:rgba(255,255,255,0.98);
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    padding:0 30px;
+    border-bottom:1px solid rgba(27,169,245,0.35);
+    z-index:999;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+#top-nav a{
+    color:var(--text-primary);
+    font-size:18px;
+    text-decoration:none;
+    transition:0.3s;
+}
+#top-nav a:hover{
+    color:var(--primary-color);
+}
+
+/* 头部banner 轮播 */
+.banner{
+    width:100%;
+    min-height:400px;
+    height:70vh;
+    position: relative;
+    overflow: hidden;
+    border-bottom:1px solid rgba(27,169,245,0.25);
+    margin-top:60px;
+    display: flex;
+    align-items:center;
+    justify-content: flex-end;
+    padding: 20px 40px;
+}
+.banner .slide{
+    width:100%;
+    height:100%;
+    position:absolute;
+    top:0; left:0;
+    background-size:contain;
+    background-repeat:no-repeat;
+    background-position:left center;
+    background-color:#ffffff;
+    opacity:0;
+    transition:opacity 1.2s ease;
+}
+.banner .slide.active{
+    opacity:1;
+}
+.banner .overlay{
+    position:absolute;
+    top:0;left:0;
+    width:100%;height:100%;
+    background:linear-gradient(rgba(255,255,255,0.08),rgba(255,255,255,0.08));
+    z-index:1;
+}
+
+/* 轮播箭头 */
+.slider-arrow {
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:50px;
+    height:50px;
+    background:rgba(27, 169, 245, 0.2);
+    border:1px solid var(--primary-color);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:24px;
+    color:var(--primary-color);
+    cursor:pointer;
+    z-index:3;
+    transition:0.3s;
+}
+.slider-arrow:hover {
+    background:rgba(27, 169, 245, 0.3);
+}
+.slider-arrow.left {
+    left:20px;
+}
+.slider-arrow.right {
+    right:20px;
+}
+
+.banner .text-content{
+    position: relative;
+    z-index: 2;
+    width: 35%;
+    min-width: 220px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    padding-left: 20px;
+}
+.banner h1{
+    font-size:clamp(10px, 5vw, 52px);
+    background:var(--gradient);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin:5px 0;
+}
+.banner p{
+    font-size:clamp(18px, 3vw, 26px);
+    color:var(--primary-color);
+    margin:6px 0;
+}
+
+/* 主体布局 */
+.main{
+    display:flex;
+    width:100%;
+    max-width:1400px;
+    margin:60px auto;
+    gap:30px;
+    padding:0 20px;
+    flex-wrap:wrap;
+}
+
+/* 左侧导航 */
+#left-nav{
+    width:100%;
+    max-width:240px;
+    display:flex;
+    flex-direction:column;
+    gap:12px;
+    position:sticky;
+    top:100px;
+    height:fit-content;
+}
+#left-nav a{
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 24px;
+    padding: 16px 20px;
+    border-radius: 10px;
+    transition: 0.3s;
+    background: var(--card-bg);
+    border: 1px solid rgba(27,169,245,0.25);
+    text-align:center;
+    cursor: pointer;
+}
+#left-nav a:hover{
+    background: rgba(27,169,245,0.12);
+    color: var(--primary-color);
+    border-left:4px solid var(--primary-color);
+}
+#left-nav a.active{
+    background: rgba(27,169,245,0.18);
+    color: var(--primary-color);
+    border-left:4px solid var(--primary-color);
+    font-weight:bold;
+}
+
+/* 点击详述提示 */
+.tip-wrap {
+    text-align: center;
+    margin-top: -5px;
+    margin-bottom: 5px;
+}
+.tip {
+    font-size: 20px;
+    color: var(--primary-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+}
+.tip span {
+    font-size: 18px;
+}
+
+/* 右侧内容区 */
+.content{
+    flex:1;
+    min-width:300px;
+}
+.container{ width:100%; }
+
+h2{
+    text-align:center;
+    font-size:clamp(24px, 4vw, 36px);
+    background:var(--gradient);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin-bottom:40px;
+}
+
+/* 卡片：默认两个并排一行 */
+.card-wrap{
+    display:grid;
+    grid-template-columns: 1fr 1fr;
+    gap:30px;
+}
+
+.card{
+    width:100%;
+    background:var(--card-bg);
+    padding:40px 30px;
+    border-radius:20px;
+    border:1px solid rgba(27,169,245,0.3);
+    box-shadow:var(--shadow);
+    transition:all 0.5s ease;
+    position:relative;
+    overflow:hidden;
+    backdrop-filter:blur(10px);
+}
+.card:hover{
+    transform:translateY(-10px);
+    box-shadow:var(--hologram-glow);
+}
+.card h3{
+    color:var(--primary-color);
+    font-size:clamp(20px, 3vw, 26px);
+    margin-bottom:20px;
+}
+.card p{
+    color:var(--text-secondary);
+    font-size:16px;
+    line-height:1.8;
+    margin-bottom:15px;
+}
+.card .principle {
+    color:var(--secondary-color);
+    font-weight:bold;
+    margin-top:10px;
+}
+
+/* 图片横向排列（5张图） */
+.img-row {
+    display: flex;
+    gap: 8px;
+    margin-top: 15px;
+    justify-content: center;
+}
+.img-row img {
+    width: 19%;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.img-row img:hover {
+    transform: scale(1.05);
+}
+
+/* 普通单图 */
+.card-img {
+    width:100%;
+    height:auto;
+    display:block;
+    object-fit:contain;
+    border-radius:12px;
+    margin-top:15px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.card-img:hover {
+    transform: scale(1.02);
+}
+
+footer{
+    text-align:center;
+    padding:40px;
+    background:var(--dark-bg-light);
+    border-top:1px solid rgba(27,169,245,0.25);
+    color:#475666;
+}
+
+/* 内容模块默认隐藏 */
+.tab-content {
+    display:none;
+}
+/* 默认显示 */
+.tab-content.active {
+    display:block;
+}
+
+/* ========== 图片放大弹窗样式 ========== */
+.img-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.img-modal.show {
+    display: flex;
+}
+.img-modal-content {
+    max-width: 90%;
+    max-height: 90%;
+    border-radius: 12px;
+    box-shadow: 0 0 50px rgba(27, 169, 245, 0.3);
+}
+.img-modal-close {
+    position: absolute;
+    top: 20px;
+    right: 30px;
+    font-size: 40px;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.img-modal-close:hover {
+    color: var(--primary-color);
+    transform: rotate(90deg);
+}
+.info-row{display:flex;align-items: flex-start; margin-bottom:5px;}
+.info-row h4{flex: 0 0 80px; font-weight: blod;}
+.info-row p{flex:1;line-height: 1.5;}
+</style>
+</head>
+
+<body>
+
+<!-- 顶部导航 -->
+<div id="top-nav">
+    <a href="index.html">⬅返回首页</a>
+</div>
+
+<!-- 头部轮播 -->
+<div id="home" class="banner">
+    <div class="overlay"></div>
+    <div class="slide active" style="background-image:url('images/robot-industry-1.jpg')"></div>
+    <div class="slide" style="background-image:url('images/robot-industry-2.jpg')"></div>
+    <div class="slide" style="background-image:url('images/robot-industry-3.jpg')"></div>
+    <div class="slide" style="background-image:url('images/robot-industry-4.jpg')"></div>
+
+    <div class="slider-arrow left" onclick="prevSlide()">❮</div>
+    <div class="slider-arrow right" onclick="nextSlide()">❯</div>
+
+    <div class="text-content">
+        <h1>🏭 工业机器人</h1>
+        <h1>自动化时期</h1>
+        <p>1960 – 1980s</p>
+        <p>Unimate</p>
+        <p>机械臂 · 工厂自动化</p>
+    </div>
+</div>
+
+<!-- 主体：左侧导航 + 右侧内容 -->
+<div class="main">
+    <div id="left-nav">
+        <a class="tab-btn active" onclick="changeTab(0)">简介</a>
+        
+        <div class="tip-wrap">
+            <div class="tip"><span>⬇</span> 点击详述</div>
+        </div>
+
+        <a class="tab-btn" onclick="changeTab(1)">诞生起源</a>
+        <a class="tab-btn" onclick="changeTab(2)">核心机型</a>
+        <a class="tab-btn" onclick="changeTab(3)">技术原理</a>
+        <a class="tab-btn" onclick="changeTab(4)">历史影响</a>
+    </div>
+
+    <div class="content">
+        <div class="container">
+
+            <!-- 默认内容：概念与理念 -->
+            <div class="tab-content active">
+                <h2 id="history">工业机器人时代</h2>
+                <div class="card-wrap">
+                    <div class="card">
+                        <h3>📜 时代定位</h3>
+                        <p>工业机器人时期是机器人真正走向实用化的开端，<br>以固定程序、重复作业、机械臂为核心，彻底改变现代制造业。</p>
+                        <p>机器人从实验室走向工厂，开启现代制造业自动化革命，<br>大幅提升生产效率、精度与稳定性。</p>
+                        <img src="images/robot-industry-8.jpg" class="card-img" onclick="openImg(this.src)" alt="工业机器人时代">
+                        <p style="text-align: center;">自动化生产线</p>
+                    </div>
+                    <div class="card">
+                        <h3>⚙️ 时代意义</h3>
+                        <p>机器人从实验室走向工厂，开启现代制造业自动化革命，<br>大幅提升生产效率、精度与稳定性。</p>
+                        <img src="images/robot-industry-10.jpg" class="card-img" onclick="openImg(this.src)" alt="时代意义">
+                        <p style="text-align: center;">机械臂作业</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容2：诞生起源 -->
+            <div class="tab-content">
+                <h2>诞生起源 · 开创时代</h2>
+                <div class="card-wrap">
+                    <div class="card">
+                        <h3>🤖 世界首台工业机器人 Unimate</h3>
+                        <div class="info-row">
+                        <h4>发明者：</h4><p>乔治·德沃尔 + 约瑟夫·恩格尔伯格</p></div>
+                        <div class="info-row">
+                        <h4>诞生时间：</h4><p>1959 年</p></div>
+                        <div class="info-row">
+                        <h4>首次应用：</h4><p>1961 年通用汽车工厂，用于搬运高温零件</p></div>
+                        
+                        <p class="principle">✅ 历史意义：世界第一台真正投入生产的工业机器人，开启自动化时代</p>
+                        <p>（点击放大查看）</p>
+                            <img style="width:70%; margin:10px auto; object-fit:contain; display:block; border-radius:10px;"
+                            src="images/robot-industry-7.jpg" onclick="openImg(this.src)">
+                    </div>
+                    <div class="card">
+                        <h3>🌍 时代发展历程</h3>
+                        <div class="info-row">
+                        <h4>1960s：</h4><p>机械臂进入汽车厂，完成焊接、搬运</p></div>
+                        <div class="info-row">
+                        <h4>1970s：</h4><p>日本、德国、美国大规模量产工业机器人</p></div>
+                        <div class="info-row">
+                        <h4>1980s：</h4><p>精度与速度大幅提升，成为制造业标配</p></div>
+                        
+                        <p class="principle">✅ 核心特征：固定程序、重复精度高、无感知能力</p>
+                        <p>（点击放大查看）</p>
+                            <img src="images/robot-industry-6.jpg" onclick="openImg(this.src)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容3：核心机型 -->
+            <div class="tab-content">
+                <h2>经典机型 · 机械王者</h2>
+                <div class="card-wrap">
+                    <div class="card">
+                        <h3>🔧 多关节机械臂</h3>
+                        
+                        <div class="info-row">
+                        <h4>结构：</h4><p>多自由度旋转关节，模拟人类手臂运动</p></div>
+                        <div class="info-row">
+                        <h4>用途：</h4><p>焊接、喷涂、搬运、装配、切割</p></div>
+                        <div class="info-row">
+                        <h4>特点：</h4><p>力量大、重复精度极高、24小时不间断工作</p></div>
+                        <p class="principle">✅ 核心结构：电机驱动 + 减速齿轮 + 液压控制</p>
+                        <p>（点击放大查看）</p>
+                        <div class="img-row">
+                            
+                            <img src="images/robot-industry-11.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-industry-12.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-industry-13.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-industry-14.jpg" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>🚗AGV无人车</h3>
+                        <div class="info-row">
+                        <h4>导航方式：</h4><p>电磁导航、磁条导航、激光导航</p></div>
+                        <div class="info-row">
+                        <h4>核心特点：</h4><p>无人化、柔性、精准、安全、调度</p></div>
+                        
+                        <p class="principle">✅ 应用场景：全自动生产线、无人车间</p>
+                        <p>（点击放大查看）</p>
+                        <div class="img-row">
+                            <img src="images/robot-industry-15.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-industry-16.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-industry-17.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-industry-18.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-industry-19.jpg" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容4：技术原理 -->
+            <div class="tab-content">
+                <h2>技术原理 · 机械控制</h2>
+                <div class="card-wrap">
+                    <div class="card">
+                        <h3>⚙️ 驱动系统</h3>
+                        <p>是机器人、AGV、机械设备的动力来源，把能量转换成机械能，带动关节、车轮、机构运动，介于控制器和机械结构之间。</p>
+                        <div class="info-row">
+                        <h4>驱动方式：</h4><p>液压驱动、气动驱动、电机驱动</p></div>
+                        <div class="info-row">
+                        <h4>控制方式：</h4><p>早期计算机 + 固定程序存储器</p></div>
+                        
+                        <p class="principle">✅ 运行方式：按预设轨迹重复运动，无自主思考</p>
+                        <p>（点击放大查看）</p>
+                        <div class="img-row">
+                            <img src="images/robot-industry-27.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-industry-28.jpg" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+                    <div class="card">
+                        <h3>📌 控制逻辑</h3>
+                        <p>机器按照预设规则、判断条件、先后顺序，自动执行动作、判断状态、协调各部件工作的思维与运行规则。</p>
+                        <div class="info-row">
+                        <h4>核心组成：</h4><p>输入采集、逻辑运算与判断、输出执行</p></div>
+                        <div class="info-row">
+                        <h4>逻辑类型：</h4><p>顺序控制（时序逻辑）、条件控制（分支逻辑）、联锁 & 互锁逻辑（安全核心）、循环控制、闭环反馈控制逻辑</p></div>
+                        
+                        <p class="principle">✅ 核心：固定程序 + 开环控制</p>
+                        （点击放大查看）
+                        <div class="img-row">
+                            <img src="images/robot-industry-32.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-industry-33.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-industry-34.jpg" onclick="openImg(this.src)">
+                            <img src="images/robot-industry-35.jpg" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 内容5：历史影响 -->
+            <div class="tab-content">
+                <h2>历史影响 · 工业革命</h2>
+                <div class="card-wrap">
+                    <div class="card">
+                        <h3>🏭 制造业变革</h3>
+                        <p>替代人工完成重复、危险、高强度工作</p>
+                        <p>生产效率、精度、一致性大幅提升</p>
+                        <p>推动汽车、电子、金属加工行业飞速发展</p>
+                    </div>
+                    <div class="card">
+                        <h3>🌐 技术奠基</h3>
+                        <p>为后续智能机器人、感知机器人、协作机器人奠定机械与控制基础</p>
+                        <p>推动自动化、计算机控制、传感器技术的快速发展</p>
+                        <p>开启全球工业4.0与智能制造的序幕</p>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 图片放大弹窗 -->
+<div class="img-modal" id="imgModal" onclick="closeImg()">
+    <span class="img-modal-close">&times;</span>
+    <img src="" class="img-modal-content" id="modalImg">
+</div>
+
+<footer>
+工业机器人时期科普｜自动化革命 · 现代工业基石
+</footer>
+
+<script>
+// 轮播：自动 + 手动
+const slides = document.querySelectorAll('.banner .slide');
+let idx = 0;
+function showSlide(index) {
+    slides.forEach(s => s.classList.remove('active'));
+    idx = (index + slides.length) % slides.length;
+    slides[idx].classList.add('active');
+}
+function nextSlide() { showSlide(idx + 1); }
+function prevSlide() { showSlide(idx - 1); }
+setInterval(()=>nextSlide(), 3000);
+
+// 左侧切换右侧内容
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+function changeTab(index) {
+    tabBtns.forEach((btn,i)=>{
+        btn.classList.toggle('active', i===index);
+    });
+    tabContents.forEach((con,i)=>{
+        con.classList.toggle('active', i===index);
+    });
+}
+
+// ========== 图片放大功能 ==========
+const imgModal = document.getElementById("imgModal");
+const modalImg = document.getElementById("modalImg");
+
+function openImg(src) {
+    imgModal.classList.add("show");
+    modalImg.src = src;
+}
+
+function closeImg() {
+    imgModal.classList.remove("show");
+}
+</script>
+
+</body>
+</html>

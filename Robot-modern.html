@@ -1,0 +1,272 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>现代机器人概念产生时期</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+        }
+        body {
+            background: #f0f4f8;
+            color: #2d3748;
+            line-height: 1.8;
+        }
+        #top-nav{
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:40px;
+    background:rgba(255,255,255,0.98);
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    padding:0 30px;
+    border-bottom:1px solid rgba(27,169,245,0.35);
+    z-index:999;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+#top-nav a{
+    color:var(--text-primary);
+    font-size:18px;
+    text-decoration:none;
+    transition:0.3s;
+}
+#top-nav a:hover{
+    color:var(--primary-color);
+}
+        header {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: #fff;
+            padding: 2.5rem 1rem;
+            text-align: center;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+        }
+        header h1 {
+            font-size: 2.2rem;
+            margin-bottom: 0.5rem;
+        }
+        header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+            font-weight: 300;
+        }
+        .main {
+            display: flex;
+            max-width: 1200px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+            gap: 2rem;
+            align-items: flex-start;
+        }
+        /* 左侧时间线导航 */
+        .timeline-nav {
+            width: 280px;
+            background: #fff;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            position: sticky;
+            top: 2rem;
+        }
+        .timeline-nav h3 {
+            color: #1e293b;
+            font-size: 1.2rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.6rem;
+            border-bottom: 2px solid #3b82f6;
+        }
+        .timeline-nav ul {
+            list-style: none;
+        }
+        .timeline-nav li {
+            margin-bottom: 1rem;
+        }
+        .timeline-nav a {
+            display: block;
+            padding: 0.8rem 1rem;
+            color: #475569;
+            text-decoration: none;
+            border-radius: 8px;
+            transition: all 0.3s ease;
+            font-weight: 500;
+            border-left: 3px solid transparent;
+        }
+        .timeline-nav a:hover,
+        .timeline-nav a.active {
+            background: #eff6ff;
+            color: #3b82f6;
+            border-left: 3px solid #3b82f6;
+            transform: translateX(4px);
+        }
+        .timeline-nav a span {
+            display: block;
+            font-size: 0.9rem;
+            color: #94a3b8;
+            margin-top: 0.2rem;
+        }
+        /* 右侧内容区 */
+        .content {
+            flex: 1;
+        }
+        .section {
+            background: #fff;
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 6px 20px rgba(0,0,0,0.06);
+            display: none; /* 默认隐藏 */
+        }
+        .section.active {
+            display: block; /* 激活显示 */
+        }
+        .section h2 {
+            color: #1e293b;
+            font-size: 1.6rem;
+            margin-bottom: 1.2rem;
+            padding-bottom: 0.8rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        .img-group {
+            display: flex;
+            gap: 1rem;
+            margin: 1.2rem 0;
+            flex-wrap: wrap;
+        }
+        .img-group img {
+            flex: 1;
+            min-width: 280px;
+            max-width: 100%;
+            height: auto;
+            border-radius: 10px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+        }
+        .section p {
+            color: #64748b;
+            font-size: 1.05rem;
+            margin-bottom: 1rem;
+        }
+        footer {
+            text-align: center;
+            padding: 2rem;
+            color: #94a3b8;
+            font-size: 0.95rem;
+            background: #fff;
+            margin-top: 3rem;
+            box-shadow: 0 -4px 15px rgba(0,0,0,0.05);
+        }
+        @media (max-width: 768px) {
+            .main {
+                flex-direction: column;
+            }
+            .timeline-nav {
+                width: 100%;
+                position: static;
+            }
+        }
+    </style>
+</head>
+<body>
+<div id="top-nav">
+    <a href="index.html">⬅返回首页</a>
+</div>
+<header>
+    <h1>现代机器人概念产生时期</h1>
+    <p>1921–1954 | 从幻想到科学的关键转折</p>
+</header>
+
+<div class="main">
+    <!-- 左侧时间线导航 -->
+    <div class="timeline-nav">
+        <h3>时间线导航</h3>
+        <ul>
+            <li><a href="#1921" class="active" data-target="1921">1921 <span>Robot一词诞生</span></a></li>
+            <li><a href="#1940s" data-target="1940s">1940年代 <span>控制论与三定律</span></a></li>
+            <li><a href="#1948" data-target="1948">1948–1949 <span>乌龟机器人</span></a></li>
+            <li><a href="#1950" data-target="1950">1950 <span>图灵测试</span></a></li>
+            <li><a href="#1954" data-target="1954">1954 <span>Unimate专利</span></a></li>
+        </ul>
+    </div>
+
+    <!-- 右侧内容区 -->
+    <div class="content">
+        <div id="1921" class="section active">
+            <h2>1921 — Robot一词诞生</h2>
+            <div class="img-group">
+                <img src="images/robot-industry-01.jpg" alt="R.U.R.剧本封面">
+                <img src="images/robot-industry-02.jpg" alt="R.U.R.舞台剧剧照">
+            </div>
+            <p>捷克作家卡雷尔·恰佩克在科幻剧本《罗萨姆的万能机器人》（R.U.R.）中创造“Robot”一词，源自捷克语“Robota”（劳役、苦工），标志现代机器人概念正式诞生。</p>
+            <p>剧中机器人被设定为可替代人类劳动的人造人，引发全球对“机器人”的广泛讨论，成为现代机器人文化与技术的起点。</p>
+        </div>
+
+        <div id="1940s" class="section">
+            <h2>1940年代 — 控制论与机器人三定律</h2>
+            <div class="img-group">
+                <img src="images/robot-industry-03.jpg" alt="诺伯特·维纳">
+                <img src="images/robot-industry-04.jpg" alt="控制论原版封面">
+            </div>
+            <p>诺伯特·维纳创立控制论，提出“感知-反馈-执行”闭环，奠定机器人自动控制理论基础。</p>
+            <p>艾萨克·阿西莫夫在《我，机器人》中提出机器人三定律，建立机器人伦理规范，影响至今。</p>
+        </div>
+
+        <div id="1948" class="section">
+            <h2>1948–1949 — 第一台自主机器人：乌龟机器人</h2>
+            <div class="img-group">
+                <img src="images/robot-industry-05.jpg" alt="乌龟机器人Elsie">
+            </div>
+            <p>英国科学家威廉·格雷·沃尔特制造“乌龟机器人”（Elsie/Elmer），具备趋光、避障、自主移动能力，是世界首台真正自主机器人。</p>
+            <p>它通过简单电路实现复杂行为，证明低复杂度系统可产生智能表现，为自主机器人研究开辟道路。</p>
+        </div>
+
+        <div id="1950" class="section">
+            <h2>1950 — 图灵测试：机器智能的判定</h2>
+            <div class="img-group">
+                <img src="images/robot-industry-07.jpg" alt="阿兰·图灵">
+                <img src="images/robot-industry-08.jpg" alt="图灵测试示意图">
+            </div>
+            <p>阿兰·图灵发表《计算机器与智能》，提出图灵测试：若人类通过文字对话无法区分机器与人类，则机器具备智能。</p>
+            <p>该测试为人工智能与智能机器人设立首个可量化目标，成为机器智能研究的重要里程碑。</p>
+        </div>
+
+        <div id="1954" class="section">
+            <h2>1954 — 第一台可编程工业机器人专利</h2>
+            <div class="img-group">
+                <img src="images/robot-industry-09.jpg" alt="Unimate机器人原理图">
+                <img src="images/robot-industry-06.jpg" alt="Unimate在通用汽车产线">
+            </div>
+            <p>乔治·德沃尔申请可编程机器人专利，发明Unimate，成为现代工业机器人的起点。</p>
+            <p>1961年Unimate投入通用汽车生产线，执行搬运、焊接等任务，开启工业机器人时代。</p>
+        </div>
+    </div>
+</div>
+
+<footer>
+    机器人发展史专题 &copy; 2026
+</footer>
+
+<script>
+    // 点击导航切换内容
+    const navLinks = document.querySelectorAll('.timeline-nav a');
+    const sections = document.querySelectorAll('.section');
+    navLinks.forEach(link => {
+        link.addEventListener('click', (e) => {
+            e.preventDefault();
+            // 移除所有激活状态
+            navLinks.forEach(l => l.classList.remove('active'));
+            sections.forEach(s => s.classList.remove('active'));
+            // 激活当前
+            link.classList.add('active');
+            const target = link.getAttribute('data-target');
+            document.getElementById(target).classList.add('active');
+        });
+    });
+</script>
+
+</body>
+</html>

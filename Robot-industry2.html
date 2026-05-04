@@ -1,0 +1,1669 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>工业分拣机器人 | 机器人科普网站</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: "Microsoft Yahei", "Roboto", sans-serif;
+        }
+
+        :root {
+            --primary-color: #00f0ff;
+            --secondary-color: #9d4edd;
+            --accent-color: #ff3a3a;
+            --dark-bg: #050a18;
+            --dark-bg-light: #0c162d;
+            --card-bg: rgba(12, 22, 45, 0.6);
+            --text-primary: #e0e8ff;
+            --text-secondary: #8ba4f9;
+            --shadow: 0 8px 32px rgba(0, 240, 255, 0.15);
+            --glow: 0 0 20px rgba(0, 240, 255, 0.6);
+            --hologram-glow: 0 0 15px rgba(157, 78, 221, 0.5), 0 0 30px rgba(0,240,255,0.3);
+            --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+        }
+
+        body {
+    background: #020614;
+    color: var(--text-primary);
+    background-image:
+        linear-gradient(rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0, 240, 255, 0.05) 1px, transparent 1px),
+        radial-gradient(circle at 15% 15%, rgba(0, 240, 255, 0.12) 0%, transparent 28%),
+        radial-gradient(circle at 85% 25%, rgba(157, 78, 221, 0.10) 0%, transparent 28%),
+        radial-gradient(circle at 50% 90%, rgba(0, 240, 255, 0.08) 0%, transparent 35%),
+        radial-gradient(circle at 20% 70%, rgba(157, 78, 221, 0.07) 0%, transparent 30%);
+    background-size: 
+        35px 35px,
+        35px 35px,
+        100% 100%,
+        100% 100%,
+        100% 100%,
+        100% 100%;
+    background-attachment: fixed;
+    line-height: 1.7;
+    padding-bottom: 60px;
+    overflow-x: hidden;
+}
+        #nav {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: auto;
+            min-height: 60px;
+            background: rgba(5, 10, 24, 0.97);
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            justify-content: center;
+            gap: 16px 25px;
+            border-bottom: 1px solid rgba(0, 240, 255, 0.4);
+            z-index: 9999;
+            padding: 12px 15px;
+        }
+
+        #nav a {
+            color: #e0e8ff;
+            font-size: 16px;
+            text-decoration: none;
+            transition: 0.3s;
+            white-space: nowrap;
+        }
+
+        #nav a:hover {
+            color: var(--primary-color);
+        }
+
+        .carousel {
+            position: relative;
+            width: 100%;
+            height: 50vh;
+            min-height: 300px;
+            max-height: 500px;
+            overflow: hidden;
+            margin-top: 80px;
+        }
+
+        .carousel-images {
+            width: 100%;
+            height: 100%;
+            position: relative;
+        }
+
+        .carousel-images img {
+            position: absolute;
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            opacity: 0;
+            transition: opacity 1s ease;
+        }
+
+        .carousel-images img.active {
+            opacity: 1;
+        }
+
+        .carousel-btn {
+            position: absolute;
+            top: 50%;
+            transform: translateY(-50%);
+            width: 40px;
+            height: 40px;
+            background: rgba(12, 22, 45, 0.4);
+            color: var(--primary-color);
+            border: 1px solid var(--primary-color);
+            font-size: 20px;
+            cursor: pointer;
+            z-index: 10;
+            border-radius: 50%;
+            backdrop-filter: blur(10px);
+            transition: 0.3s;
+        }
+
+        .carousel-btn:hover {
+            background: rgba(0, 240, 255, 0.1);
+            box-shadow: var(--hologram-glow);
+        }
+
+        .prev { left: 15px; }
+        .next { right: 15px; }
+
+        .carousel-dots {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px;
+        }
+
+        .dot {
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: rgba(255, 255, 25, 0.2);
+            cursor: pointer;
+            border: 1px solid rgba(0, 240, 255, 0.3);
+            transition: 0.3s;
+        }
+
+        .dot.active {
+            background: var(--primary-color);
+            transform: scale(1.3);
+            box-shadow: var(--glow);
+        }
+
+        .container {
+            width: 100%;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 30px 15px;
+        }
+
+        h1 {
+            text-align: center;
+            font-size: clamp(26px, 5vw, 38px);
+            background: var(--gradient);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            margin-bottom: 30px;
+            letter-spacing: 1px;
+            line-height: 1.3;
+        }
+
+        .glass-card {
+            background: var(--card-bg);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            border-radius: 16px;
+            padding: 25px 20px;
+            margin: 25px 0;
+            box-shadow: var(--shadow);
+            transition: 0.3s;
+            width: 100%;
+            overflow: visible;
+        }
+
+        .glass-card:hover {
+            transform: translateY(-3px);
+            box-shadow: var(--hologram-glow);
+        }
+
+        h2 {
+            color: var(--primary-color);
+            border-left: 4px solid var(--secondary-color);
+            padding-left: 12px;
+            margin-bottom: 20px;
+            font-size: clamp(20px, 4vw, 24px);
+        }
+
+        p {
+            font-size: 15px;
+            color: var(--text-primary);
+            margin-bottom: 12px;
+        }
+
+        strong {
+            color: var(--primary-color);
+        }
+
+        .flow-wrap {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin-top: 15px;
+        }
+
+        .flow-item {
+            flex: 1;
+            min-width: 140px;
+            text-align: center;
+            padding: 15px 8px;
+            background: rgba(0, 240, 255, 0.08);
+            border-radius: 10px;
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            transition: 0.3s;
+        }
+
+        table {
+            width: 100%;
+            min-width: 600px;
+            border-collapse: collapse;
+            margin-top: 15px;
+        }
+
+        th, td {
+            border: 1px solid rgba(0, 240, 255, 0.2);
+            padding: 12px 8px;
+            text-align: center;
+            font-size: 14px;
+        }
+
+        th {
+            background: rgba(157, 78, 221, 0.15);
+            color: var(--primary-color);
+            font-size: 15px;
+        }
+
+        .struct-row {
+            display: flex;
+            gap: 12px;
+            justify-content: center;
+            align-items: stretch;
+            padding: 15px 0;
+            width: 100%;
+            flex-wrap: nowrap;
+            overflow: visible;
+        }
+
+        .struct-item {
+            flex: 1;
+            min-width: 0;
+            max-width: 200px;
+            background: rgba(255,255,255,0.05);
+            border-radius: 12px;
+            padding: 16px 10px;
+            text-align: center;
+            border: 1px solid rgba(0,240,255,0.2);
+            transition: 0.3s;
+        }
+
+        .struct-item img {
+            width: 70px;
+            height: 70px;
+            margin-bottom: 10px;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .struct-item h3 {
+            color: var(--primary-color);
+            margin-bottom: 6px;
+            font-size: 15px;
+            line-height: 1.3;
+        }
+        .struct-item p {
+            font-size: 13px;
+            line-height: 1.4;
+        }
+
+        .img-modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(5, 10, 24, 0.95);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+            backdrop-filter: blur(10px);
+        }
+
+        .img-modal.show {
+            display: flex;
+        }
+
+        .modal-content {
+            max-width: 90%;
+            max-height: 80%;
+            border-radius: 12px;
+            box-shadow: var(--hologram-glow);
+        }
+
+        .close-modal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: 45px;
+            height: 45px;
+            background: rgba(0, 240, 255, 0.1);
+            border: 1px solid var(--primary-color);
+            color: var(--primary-color);
+            font-size: 22px;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: 0.3s;
+        }
+
+        .interaction-section {
+            width: 100%;
+            max-width: 1400px;
+            margin: 30px auto 0;
+            padding: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .auto-scale-wrapper {
+            width: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transform-origin: center;
+            transform: scale(1);
+        }
+
+        .auto-scale-box {
+            width: 1200px;
+            height: 780px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            padding: 25px;
+            background: var(--card-bg);
+            border: 1px solid rgba(0,240,255,0.2);
+            border-radius: 20px;
+            box-shadow: var(--shadow);
+        }
+
+        .interaction-content {
+            display: flex;
+            gap: 20px;
+            flex: 1;
+        }
+
+        .sim-left {
+            width: 780px;
+            display: flex;
+            flex-direction: column;
+            gap: 18px;
+        }
+
+        .sim-right {
+            flex: 1;
+            display: flex;
+        }
+
+        .simulate-area {
+    width: 100%;
+    height: 420px;
+    background: #0f172a;
+    border: double 3px transparent;
+    border-radius: 16px;
+    background-image:
+        linear-gradient(#0f172a, #0f172a),
+        linear-gradient(90deg, #00f0ff, #9d4edd, #00f0ff);
+    background-origin: border-box;
+    background-clip: padding-box, border-box;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 0 30px #00f0ff33, inset 0 0 80px #36d1dc15;
+    animation: hologramBreath 3.2s ease-in-out infinite;
+}
+
+@keyframes hologramBreath {
+    0% {
+        box-shadow: 0 0 25px rgba(0, 240, 255, 0.3), inset 0 0 80px #36d1dc15;
+    }
+    50% {
+        box-shadow: 0 0 50px rgba(157, 78, 221, 0.45), inset 0 0 80px #36d1dc15;
+    }
+    100% {
+        box-shadow: 0 0 25px rgba(0, 240, 255, 0.3), inset 0 0 80px #36d1dc15;
+    }
+}
+
+        .belt {
+            width: 100%;
+            height: 24%;
+            background: #192841;
+            position: absolute;
+            top: 38%;
+            border-top: 3px solid #2c3e50;
+            border-bottom: 3px solid #2c3e50;
+        }
+        .belt-texture {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    background: repeating-linear-gradient(90deg,
+        rgba(255,255,255,0.06),
+        rgba(255,255,255,0.06) 22px,
+        transparent 22px, transparent 44px);
+    animation: beltFlow 1s linear infinite;
+    animation-play-state: paused;
+}
+@keyframes beltFlow {
+    0% { background-position: 0 0; }
+    100% { background-position: 44px 0; }
+}
+
+        .goods {
+    width: 55px;
+    height: 55px;
+    border-radius: 10px;
+    position: absolute;
+    top: 39%;
+    left: 5%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    color: #000;
+    font-weight: bold;
+    font-size: 13px;
+    z-index: 5;
+    transition: all 0.3s ease;
+    cursor: move; /* 拖拽光标 */
+}
+/* 长方形物料 */
+.goods-rect {
+    width: 70px !important;
+    height: 45px !important;
+    border-radius: 6px !important;
+}
+/* 圆形物料 */
+.goods-circle {
+    border-radius: 50% !important;
+    width: 50px !important;
+    height: 50px !important;
+}
+.goods-good { background: #4ade80; }
+.goods-bad { background: #f87171; }
+.goods-check { background: #fbbf24; }
+
+        .arm1-base {
+            width: 36px; height: 36px;
+            background: #5b86e5;
+            position: absolute;
+            top: 31%; right: 30%;
+            border-radius: 4px; z-index: 12;
+            cursor: move;
+        }
+        .arm1 {
+            width: 180px; height: 32px;
+            background: linear-gradient(180deg, #60a5fa, #5b86e5);
+            position: absolute;
+            top: 32%; right: 33%;
+            border-radius: 6px;
+            transform-origin: right center;
+            transition: transform 0.45s cubic-bezier(0.22,1,0.36,1);
+            z-index: 8;
+            cursor: move;
+        }
+        .gripper1 {
+            width: 40px; height: 100%;
+            background: #94a3b8;
+            position: absolute; right: 0; top: 0;
+            border-radius: 4px;
+            transition: transform 0.25s ease;
+            transform-origin: center;
+        }
+
+        .arm2-base {
+            width: 36px; height: 36px;
+            background: #a855f7;
+            position: absolute;
+            top: 31%; right: 11%;
+            border-radius: 4px; z-index: 12;
+            cursor: move;
+        }
+        .arm2 {
+            width: 180px; height: 32px;
+            background: linear-gradient(180deg, #c084fc, #a855f7);
+            position: absolute;
+            top: 32%; right: 14%;
+            border-radius: 6px;
+            transform-origin: right center;
+            transition: transform 0.45s cubic-bezier(0.22,1,0.36,1);
+            z-index: 8;
+            cursor: move;
+        }
+        .gripper2 {
+            width: 40px; height: 100%;
+            background: #94a3b8;
+            position: absolute; right: 0; top: 0;
+            border-radius: 4px;
+            transition: transform 0.25s ease;
+            transform-origin: center;
+        }
+
+        .gripper-active {
+            transform: scaleY(0.55);
+            background: #36d1dc !important;
+        }
+
+        .sort-slot {
+            width: 110px; height: 85px;
+            border: 2px solid rgba(54,209,220,0.4);
+            position: absolute; bottom: 5%;
+            border-radius: 10px;
+            text-align: center;
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; font-size: 13px;
+            background: rgba(15,23,42,0.85);
+        }
+        .slot-good { right: 4%;  border-color: #4ade8066; color:#4ade80; }
+        .slot-bad  { right: 19%; border-color: #f8717166; color:#f87171; }
+        .slot-check{ right: 35%; border-color: #fbbf2466; color:#fbbf24; }
+
+        .sensor-area1{
+            width: 90px; height: 75px;
+            border:2px dashed rgba(66,187,255,0.45);
+            position:absolute; top:36%; right:45%;
+            border-radius:8px;
+            transition: all 0.2s;
+        }
+        .sensor-area1.active{
+            border-color: #22ffaa;
+            background: rgba(34, 255, 170, 0.25);
+            box-shadow: 0 0 25px #22ffaa, inset 0 0 15px #22ffaa88;
+        }
+
+        .sensor-area2{
+            width: 90px; height: 75px;
+            border:2px dashed rgba(168,85,247,0.45);
+            position:absolute; top:36%; right:24%;
+            border-radius:8px;
+            transition: all 0.2s;
+        }
+        .sensor-area2.active{
+            border-color: #ffdd22;
+            background: rgba(255, 221, 34, 0.25);
+            box-shadow: 0 0 25px #ffdd22, inset 0 0 15px #ffdd2288;
+        }
+
+        .photo-sensor1 {
+            width: 14px; height: 45px;
+            background: #3b82f6;
+            position: absolute; top: 41%; right: 49%;
+            border-radius: 3px;
+            z-index:7;
+            transition: all 0.2s;
+        }
+        .photo-sensor1.sensor-trigger{
+            background: #22ffaa;
+            box-shadow: 0 0 20px #22ffaa, 0 0 40px #22ffaa77;
+            animation: sensorBlink 0.3s infinite alternate;
+        }
+
+        .photo-sensor2 {
+            width: 14px; height: 45px;
+            background: #a855f7;
+            position: absolute; top: 41%; right: 28%;
+            border-radius: 3px;
+            z-index:7;
+            transition: all 0.2s;
+        }
+        .photo-sensor2.sensor-trigger{
+            background: #ffdd22;
+            box-shadow: 0 0 20px #ffdd22, 0 0 40px #ffdd2277;
+            animation: sensorBlink 0.3s infinite alternate;
+        }
+
+        .sensor-light {
+            width: 60%; height: 70%;
+            background: inherit;
+            position: absolute; top: 15%; left: 20%;
+            border-radius: 1px;
+            transition: background 0.3s, box-shadow 0.3s;
+        }
+        .sensor-trigger .sensor-light{
+            background: #ffffff;
+            box-shadow: 0 0 15px #fff, 0 0 30px #fff;
+        }
+
+        @keyframes sensorBlink {
+            from { opacity: 0.7; transform: scale(1); }
+            to   { opacity: 1; transform: scale(1.15); }
+        }
+
+        .help-card{
+            background: rgba(255,255,255,0.08);
+            backdrop-filter: blur(15px);
+            border: 1px solid rgba(54,209,220,0.25);
+            border-radius: 16px;
+            padding: 18px 15px;
+            line-height: 1.5;
+            font-size: 14px;
+            height: 200px;
+        }
+        .help-card h2{
+            color: #36d1dc;
+            text-align: center;
+            font-size: 18px;
+            margin-bottom: 10px;
+            border-left: none;
+        }
+        .help-card ul{ padding-left: 20px; margin-bottom: 8px; }
+        .help-card li{ margin-bottom: 4px; }
+        .help-card strong { color: #36d1dc; }
+        .text-green{color:#4ade80;} .text-red{color:#f87171;} .text-purple{color:#c084fc;} .text-yellow{color:#fbbf24;} .text-blue{color:#36d1dc;}
+
+        .control-card {
+    width: 100%;
+    background: rgba(255,255,255,0.08);
+    backdrop-filter: blur(15px);
+    border: 1px solid rgba(54,209,220,0.25);
+    border-radius: 18px;
+    padding: 14px 12px;
+    max-width: 260px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    position: relative;
+    overflow: hidden;
+}
+.control-card h2 {
+    color: #36d1dc;
+    text-align: center;
+    margin: 0 0 6px 0;
+    font-size: 16px;
+}
+.ctrl-btn {
+    width: 100%;
+    height: 38px;
+    border: none;
+    border-radius: 10px;
+    background: linear-gradient(90deg,#36d1dc,#5b86e5);
+    color: #fff;
+    font-size: 13px;
+    font-weight: bold;
+    margin-bottom: 6px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.ctrl-btn:hover { box-shadow: 0 0 18px #36d1dc77; }
+.ctrl-btn:disabled {
+    background: #475569; opacity: 0.7; cursor: not-allowed; box-shadow: none;
+}
+
+.test-btn-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 6px;
+    margin-top: 8px;
+}
+.test-btn {
+    height: 34px;
+    border: none;
+    border-radius: 8px;
+    font-size: 12px;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.test-btn-good { background: #4ade80; color: #000; }
+.test-btn-bad  { background: #f87171; color: #fff; }
+.test-btn-check{ background: #fbbf24; color: #000; }
+.test-btn:hover { filter: brightness(1.15); box-shadow: 0 0 15px rgba(255,255,255,0.2); }
+
+.data-panel{
+    margin-top: 10px;
+    padding: 10px;
+    border:1px solid #36d1dc33;
+    border-radius:10px;
+    background:#0b1120;
+    flex-grow: 1;
+}
+.data-item{
+    display:flex; justify-content:space-between;
+    padding:4px 0; border-bottom:1px solid #ffffff12;
+    font-size:12px;
+}
+
+        @media (max-width: 1250px) {
+            .auto-scale-wrapper { transform: scale(0.9); }
+        }
+        @media (max-width: 1100px) {
+            .auto-scale-wrapper { transform: scale(0.82); }
+        }
+        @media (max-width: 950px) {
+            .auto-scale-wrapper { transform: scale(0.73); }
+        }
+        @media (max-width: 800px) {
+            .auto-scale-wrapper { transform: scale(0.64); }
+        }
+        @media (max-width: 650px) {
+            .auto-scale-wrapper { transform: scale(0.52); }
+        }
+        @media (max-width: 500px) {
+            .auto-scale-wrapper { transform: scale(0.42); }
+        }
+        @media (max-width: 400px) {
+            .auto-scale-wrapper { transform: scale(0.36); }
+        }
+        #arm1, #arm2 {
+    filter: drop-shadow(0 0 6px rgba(0,240,255,0.2));
+    transition: transform 0.45s cubic-bezier(0.22,1,0.36,1), 
+                filter 0.3s ease, box-shadow 0.3s ease;
+}
+.arm-active {
+    filter: drop-shadow(0 0 12px var(--primary-color)) 
+            drop-shadow(0 0 25px rgba(157, 78, 221, 0.4));
+    box-shadow: 0 0 20px rgba(0,240,255,0.5) inset;
+    animation: armGlowBreath 0.8s ease-in-out infinite alternate;
+}
+@keyframes armGlowBreath {
+    from {
+        filter: drop-shadow(0 0 10px #00f0ff) drop-shadow(0 0 20px #9d4edd40);
+    }
+    to {
+        filter: drop-shadow(0 0 18px #00f0ff) drop-shadow(0 0 35px #9d4edd60);
+    }
+}
+.goods-catch {
+    transform: scale(1.15) !important;
+    filter: drop-shadow(0 0 15px #00f0ff) drop-shadow(0 0 30px #9d4edd) !important;
+    transition: transform 0.3s ease, filter 0.3s ease !important;
+}
+@keyframes goodsBounce {
+    0%   { transform: scale(1); }
+    20%  { transform: scale(0.95) rotate(2deg); }
+    40%  { transform: scale(1.05) rotate(-2deg); }
+    60%  { transform: scale(0.98) rotate(1deg); }
+    80%  { transform: scale(1.02) rotate(-1deg); }
+    100% { transform: scale(1); }
+}
+.goods-drop {
+    animation: goodsBounce 0.6s ease-out;
+}
+.sort-slot.slot-active {
+    transform: scale(1.08);
+    border-color: var(--primary-color) !important;
+    box-shadow: 0 0 25px rgba(0,240,255,0.6), 
+                0 0 50px rgba(157,78,221,0.4);
+    transition: all 0.4s ease;
+}
+.speed-control {
+  margin-top: 12px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  color: var(--text-primary);
+  font-size: 14px;
+}
+.speed-control label {
+  min-width: 50px;
+}
+.speed-control input {
+  flex: 1;
+  accent-color: var(--primary-color);
+  cursor: pointer;
+}
+.speed-value {
+  min-width: 40px;
+  text-align: right;
+  color: var(--primary-color);
+  font-weight: bold;
+}
+.laser-ray {
+    position: absolute;
+    width: 2px;
+    background: linear-gradient(to bottom, #22ffaa, rgba(34,255,170,0));
+    left: 50%;
+    transform: translateX(-50%);
+    top: 100%;
+    opacity: 0;
+    transition: opacity 0.2s;
+    pointer-events: none;
+}
+@keyframes laserScan {
+    0% { height: 0px; opacity: 0.9; }
+    50% { height: 120px; opacity: 0.7; }
+    100% { height: 160px; opacity: 0; }
+}
+.laser-scan {
+    animation: laserScan 0.8s ease-out;
+}
+.particle {
+  position: absolute;
+  width: 4px; height: 4px;
+  background: #00f0ff;
+  border-radius: 50%;
+  pointer-events: none;
+  animation: particleFly 0.6s ease-out forwards;
+}
+@keyframes particleFly {
+  0%{transform:scale(1);opacity:1;}
+  100%{transform:translateY(-30px) scale(0);opacity:0;}
+}
+.particle {
+    position: absolute;
+    width: 4px;
+    height: 4px;
+    border-radius: 50%;
+    pointer-events: none;
+    z-index: 20;
+    animation: particleExplode 0.7s ease-out forwards;
+}
+@keyframes particleExplode {
+    0% {
+        transform: translate(0, 0) scale(1);
+        opacity: 1;
+    }
+    100% {
+        transform: translate(var(--tx), var(--ty)) scale(0);
+        opacity: 0;
+    }
+}
+
+/* AI视觉框样式 */
+.ai-vision-box {
+    position: absolute;
+    width: 70px;
+    height: 70px;
+    border: 2px solid #00f0ff;
+    border-radius: 6px;
+    pointer-events: none;
+    z-index: 10;
+    transition: all 0.3s ease;
+    box-shadow: 0 0 12px rgba(0,240,255,0.4);
+    display: none;
+}
+.ai-vision-box.scanning {
+    animation: visionScan 1s linear infinite;
+    border-color: #ffdd22;
+    box-shadow: 0 0 15px rgba(255,221,34,0.6);
+}
+.ai-vision-box.good {
+    border-color: #4ade80;
+    box-shadow: 0 0 15px rgba(74,222,128,0.6);
+}
+.ai-vision-box.bad {
+    border-color: #f87171;
+    box-shadow: 0 0 15px rgba(248,113,113,0.6);
+}
+.ai-vision-box.check {
+    border-color: #fbbf24;
+    box-shadow: 0 0 15px rgba(251,191,36,0.6);
+}
+.ai-vision-tip {
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(5,10,24,0.9);
+    color: #fff;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 12px;
+    white-space: nowrap;
+    border: 1px solid #00f0ff;
+    box-shadow: 0 0 8px rgba(0,240,255,0.3);
+}
+@keyframes visionScan {
+    0% { opacity: 0.7; transform: scale(1); }
+    50% { opacity: 1; transform: scale(1.03); }
+    100% { opacity: 0.7; transform: scale(1); }
+}
+    </style>
+</head>
+
+<body>
+    <div id="nav">
+        <a href="index.html">← 返回首页</a>
+        <a href="#interaction">模拟交互</a>
+        <a href="#principle">工作原理</a>
+        <a href="#composition">结构组成</a>
+        <a href="#scenarios">应用场景</a>
+        <a href="#advantage">优势与趋势</a>
+        
+    </div>
+
+    <div class="carousel">
+        <div class="carousel-images">
+            <img src="images/robot-industry2-1.jpg" class="active" alt="分拣机器人1">
+            <img src="images/robot-industry2-2.jpg" alt="分拣机器人2">
+            <img src="images/robot-industry2-3.jpg" alt="分拣机器人3">
+            <img src="images/robot-industry2-4.jpg" alt="分拣机器人4">
+        </div>
+        <button class="carousel-btn prev" onclick="prevSlide()">❮</button>
+        <button class="carousel-btn next" onclick="nextSlide()">❯</button>
+        <div class="carousel-dots">
+            <span class="dot active" onclick="goToSlide(0)"></span>
+            <span class="dot" onclick="goToSlide(1)"></span>
+            <span class="dot" onclick="goToSlide(2)"></span>
+            <span class="dot" onclick="goToSlide(3)"></span>
+        </div>
+    </div>
+
+    <div class="container">
+        <h1>工业分拣机器人科普交互中心</h1>
+        <div class="glass-card" id="interaction">
+            <h2>一、双机械臂协同分拣在线仿真交互</h2>
+            <p>本模块为<strong>双机械臂智能分拣仿真系统</strong>，通过网页实时模拟工业分拣现场，支持传送带运行、物料识别、光电检测、<br>双臂协同抓取、分类收纳全流程交互，直观体验分拣机器人的自动化工作逻辑。</p>
+            
+            <div class="interaction-section">
+                <div class="auto-scale-wrapper">
+                    <div class="auto-scale-box">
+                        <div class="interaction-content">
+                            <div class="sim-left">
+                                <div class="simulate-area">
+                                    <div class="belt"><div class="belt-texture"></div></div>
+                                    <div class="sensor-area1" id="sensorArea1"></div>
+                                    <div class="sensor-area2" id="sensorArea2"></div>
+                                    <div class="photo-sensor1" id="sensor1">
+                                        <div class="sensor-light"></div>
+                                        <div class="laser-ray" id="laser1"></div>
+                                    </div>
+                                    <div class="photo-sensor2" id="sensor2">
+                                        <div class="sensor-light"></div>
+                                        <div class="laser-ray" id="laser2"></div>
+                                    </div>
+                                    <div class="sort-slot slot-good">良品区</div>
+                                    <div class="sort-slot slot-bad">次品区</div>
+                                    <div class="sort-slot slot-check">复检区</div>
+                                    <div class="arm1-base" id="arm1Base"></div>
+                                    <div class="arm1" id="arm1"><div class="gripper1" id="gripper1"></div></div>
+                                    <div class="arm2-base" id="arm2Base"></div>
+                                    <div class="arm2" id="arm2"><div class="gripper2" id="gripper2"></div></div>
+                                    <div class="goods goods-good" id="goods">良品</div>
+                                    <div class="ai-vision-box" id="aiVisionBox">
+                                        <div class="ai-vision-tip" id="aiVisionTip">AI识别中</div>
+                                    </div>
+                                </div>
+
+                                <div class="help-card">
+                                    <h2>使用说明</h2>
+                                    <ul>
+                                        <li><strong>开始分拣</strong>：传送带自动运行，物料随机生成并自动识别</li>
+                                        <li><strong>停止分拣</strong>：立即停机</li>
+                                        <li><strong>全部复位</strong>：重置所有状态</li>
+                                        <li><strong>自动逻辑</strong>：物料检测→抓取→推入分类区→消失→生成新物品</li>
+                                        <li><strong>鼠标拖拽</strong>：可拖动物料、机械臂自由调整位置</li>
+                                    </ul>
+                                </div>
+                            </div>
+
+                            <div class="sim-right">
+                                <div class="control-card" id="controlCard">
+                                    <h2>自动控制面板</h2>
+                                    <div class="speed-control">
+                                      <label>速度</label>
+                                      <input type="range" id="speedSlider" min="0.3" max="2" step="0.1" value="1">
+                                      <span class="speed-value" id="speedValue">1.0x</span>
+                                    </div>
+                                    <button class="ctrl-btn" id="startBtn">开始分拣</button>
+                                    <button class="ctrl-btn" id="stopBtn">停止分拣</button>
+                                    <button class="ctrl-btn" id="resetBtn">全部复位</button>
+
+                                    <div class="test-btn-group">
+                                        <button class="test-btn test-btn-good" id="manualGood">生成良品</button>
+                                        <button class="test-btn test-btn-bad" id="manualBad">生成次品</button>
+                                        <button class="test-btn test-btn-check" id="manualCheck">生成复检</button>
+                                    </div>
+
+                                    <div class="data-panel">
+                                        <div class="data-item"><span>⚙️ 产线状态</span><span id="devStatus" class="text-red">待机</span></div>
+                                        <div class="data-item"><span>📦 当前物料</span><span id="goodsTypeText" class="text-green">良品</span></div>
+                                        <div class="data-item"><span>🤖1号机械臂</span><span id="arm1State">自动待命</span></div>
+                                        <div class="data-item"><span>🤖2号机械臂</span><span id="arm2State">自动待命</span></div>
+                                        <div class="data-item"><span>✅良品计数</span><span id="goodCount">0</span></div>
+                                        <div class="data-item"><span>❌次品计数</span><span id="badCount">0</span></div>
+                                        <div class="data-item"><span>🔄复检计数</span><span id="checkCount">0</span></div>
+                                        <div class="data-item"><span>📊 累计总数</span><span id="totalCount">0</span></div>
+                                        <div class="data-item"><span>⚡ 分拣效率</span><span id="efficiency">0.0 个/分钟</span></div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="glass-card" id="principle">
+            <h2>二、分拣机器人核心工作原理</h2>
+            <p>分拣机器人属于<strong>典型工业机器人</strong>，依靠视觉识别 + 控制系统 + 机械执行结构，完成物料自动分类、搬运、分流，广泛用于物流、快递、食品、医药、电子生产线。</p>
+            <div class="flow-wrap">
+                <div class="flow-item"><strong>1 物料输送</strong><p>传送带匀速传送待分拣货物</p></div>
+                <div class="flow-item"><strong>2 视觉扫码识别</strong><p>摄像头+扫码器读取<br>尺寸、条码、类别</p></div>
+                <div class="flow-item"><strong>3 系统运算判断</strong><p>控制器判定货物归属分类口</p></div>
+                <div class="flow-item"><strong>4 机械执行分拣</strong><p>机械臂/推杆/摆臂<br>完成分流剔除</p></div>
+                <div class="flow-item"><strong>5 分类收纳</strong><p>不同货物进入<br>对应料区、完成分拣</p></div>
+            </div>
+        </div>
+
+        <div class="glass-card" id="composition">
+    <h2>三、分拣机器人整体结构组成</h2>
+    <p>点击下方部件图片，查看详细原理、特点与作用介绍</p>
+    <div class="struct-row">
+        <div class="struct-item">
+            <img src="images/robot-industry2-5.jpg" onclick="openIntroModal(0)" alt="输送机构">
+            <h3>输送机构</h3>
+            <p>传送带、调速电机，负责物料连续输送</p>
+        </div>
+        <div class="struct-item">
+            <img src="images/robot-industry2-6.jpg" onclick="openIntroModal(1)" alt="视觉识别模块">
+            <h3>视觉识别模块</h3>
+            <p>工业相机+光源，识别外观、条码、颜色</p>
+        </div>
+        <div class="struct-item">
+            <img src="images/robot-industry2-7.jpg" onclick="openIntroModal(2)" alt="主控控制系统">
+            <h3>主控控制系统</h3>
+            <p>PLC/工控机，大脑指挥整体逻辑</p>
+        </div>
+        <div class="struct-item">
+            <img src="images/robot-industry2-8.jpg" onclick="openIntroModal(3)" alt="分拣执行机构">
+            <h3>分拣执行机构</h3>
+            <p>机械臂、推杆、摆杆、吸盘抓取结构</p>
+        </div>
+        <div class="struct-item">
+            <img src="images/robot-industry2-9.jpg" onclick="openIntroModal(4)" alt="光电传感器组">
+            <h3>光电传感器组</h3>
+            <p>检测有无物料、测速、定位位置</p>
+        </div>
+    </div>
+</div>
+
+        <div class="glass-card" id="scenarios">
+            <h2>四、分拣机器人常见应用场景</h2>
+            <p>✅ 快递物流仓储：包裹自动分类、分流、扫码分拣</p>
+            <p>✅ 食品行业：水果分级、零食分选、次品剔除</p>
+            <p>✅ 医药行业：药盒、药品规格分类分拣</p>
+            <p>✅ 电子工厂：元器件、良品与不良品自动分选</p>
+            <p>✅ 农业领域：农产品大小、颜色、重量智能分级</p>
+        </div>
+
+        <div class="glass-card" id="advantage">
+            <h2>五、分拣机器人核心优势与发展趋势</h2>
+            <p><strong>✅ 高效稳定：</strong>24小时不间断作业，分拣效率是人工的3～8倍，大幅提升产线节拍</p>
+            <p><strong>✅ 精准零误差：</strong>视觉+传感器双重定位，分拣准确率可达99.9%，减少错分漏分</p>
+            <p><strong>✅ 降本增效：</strong>一次性投入，长期使用，大幅降低人工成本、管理成本、工伤风险</p>
+            <p><strong>✅ 柔性适配：</strong>支持快速切换产品、规格、分拣规则，适配多品类、小批量生产需求</p>
+            <p><strong>✅ 智能升级：</strong>结合AI视觉、大数据、物联网，实现自主学习、远程监控、预测维护</p>
+            <p><strong>✅ 未来趋势：</strong>轻量化、协作化、高速化、无人化，与AGV、立体仓库联动，构建全智能工厂</p>
+        </div>
+    </div>
+
+    <div class="img-modal" id="imgModal">
+        <button class="close-modal" onclick="closeModal()">✕</button>
+        <img src="images/" id="modalImg" class="modal-content">
+    </div>
+    <!-- 部件介绍弹窗 -->
+<div class="img-modal" id="introModal">
+    <button class="close-modal" onclick="closeIntroModal()">✕</button>
+    <div class="modal-content" style="width:90%;max-width:600px;background:#0c162d;padding:25px;border-radius:16px;border:1px solid rgba(0,240,255,0.3);color:#e0e8ff;backdrop-filter:blur(10px);">
+        <h3 id="introTitle" style="color:var(--primary-color);margin-bottom:15px;font-size:20px;text-align:center;"></h3>
+        <div id="introBody" style="line-height:1.8;font-size:15px;"></div>
+    </div>
+</div>
+
+    <script>
+        // ==================== 轮播图逻辑 ====================
+        let current = 0;
+        const imgs = document.querySelectorAll('.carousel-images img');
+        const dots = document.querySelectorAll('.dot');
+        const total = imgs.length;
+        setInterval(nextSlide, 3000);
+
+        function nextSlide(){current=(current+1)%total;updateSlide();}
+        function prevSlide(){current=(current-1+total)%total;updateSlide();}
+        function goToSlide(index){current=index;updateSlide();}
+        function updateSlide(){
+            imgs.forEach((img,i)=>img.classList.toggle('active',i===current));
+            dots.forEach((dot,i)=>dot.classList.toggle('active',i===current));
+        }
+
+        // ==================== 图片弹窗 ====================
+        const modal = document.getElementById('imgModal');
+        const modalImg = document.getElementById('modalImg');
+        function openModal(src){modalImg.src=src;modal.classList.add('show');}
+        function closeModal(){modal.classList.remove('show');}
+        modal.onclick=e=>{if(e.target===modal)closeModal();}
+
+        // ==================== 拖拽移动功能（已删除物料拖拽） ====================
+function enableDrag(element) {
+    let isDragging = false;
+    let offsetX, offsetY;
+
+    element.addEventListener('mousedown', (e) => {
+        isDragging = true;
+        const rect = element.getBoundingClientRect();
+        offsetX = e.clientX - rect.left;
+        offsetY = e.clientY - rect.top;
+        element.style.zIndex = 999;
+        e.preventDefault();
+    });
+
+    document.addEventListener('mousemove', (e) => {
+        if (!isDragging) return;
+        const parent = element.parentElement.getBoundingClientRect();
+        let x = e.clientX - offsetX - parent.left;
+        let y = e.clientY - offsetY - parent.top;
+
+        x = Math.max(0, Math.min(x, parent.width - element.offsetWidth));
+        y = Math.max(0, Math.min(y, parent.height - element.offsetHeight));
+
+        element.style.left = x + 'px';
+        element.style.top = y + 'px';
+    });
+
+    document.addEventListener('mouseup', () => {
+        if (isDragging) {
+            isDragging = false;
+            element.style.zIndex = '';
+        }
+    });
+}
+
+// 启用拖拽：只保留机械臂、底座，删除物料拖拽
+const arm1 = document.getElementById('arm1');
+const arm2 = document.getElementById('arm2');
+const arm1Base = document.getElementById('arm1Base');
+const arm2Base = document.getElementById('arm2Base');
+
+enableDrag(arm1);
+enableDrag(arm2);
+enableDrag(arm1Base);
+enableDrag(arm2Base);
+
+        // ==================== 原有仿真逻辑 ====================
+        const laser1 = document.getElementById('laser1');
+        const laser2 = document.getElementById('laser2');
+        const gripper1 = document.getElementById('gripper1');
+        const gripper2 = document.getElementById('gripper2');
+        const sensor1 = document.getElementById('sensor1');
+        const sensor2 = document.getElementById('sensor2');
+        const sensorArea1 = document.getElementById('sensorArea1');
+        const sensorArea2 = document.getElementById('sensorArea2');
+        const devStatus = document.getElementById('devStatus');
+        const goodsTypeText = document.getElementById('goodsTypeText');
+        const arm1State = document.getElementById('arm1State');
+        const arm2State = document.getElementById('arm2State');
+        const goodCount = document.getElementById('goodCount');
+        const badCount = document.getElementById('badCount');
+        const checkCount = document.getElementById('checkCount');
+        const startBtn = document.getElementById('startBtn');
+        const stopBtn = document.getElementById('stopBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const slotGood = document.querySelector('.slot-good');
+        const slotBad = document.querySelector('.slot-bad');
+        const slotCheck = document.querySelector('.slot-check');
+        const speedSlider = document.getElementById('speedSlider');
+        const speedValue = document.getElementById('speedValue');
+        const beltTexture = document.querySelector('.belt-texture');
+        const aiVisionBox = document.getElementById('aiVisionBox');
+        const aiVisionTip = document.getElementById('aiVisionTip');
+        const controlCard = document.getElementById('controlCard');
+        
+        let speedScale = 1.0;
+        let isRun = false;
+        let beltTimer = null;
+        let goodsType = 0;
+        let gCnt = [0,0,0];
+        let isSorting = false;
+        let sensorTriggered = false;
+        let totalCount = 0;
+        let startTime = null;
+
+        // 更新AI视觉框
+        function updateAIVisionBox() {
+            if (!goods || goods.style.display === 'none') {
+                aiVisionBox.style.display = 'none';
+                return;
+            }
+            const gLeft = parseFloat(goods.style.left || 5);
+            const gTop = parseFloat(goods.style.top || 39);
+            
+            if(goods.classList.contains('goods-rect')){
+                aiVisionBox.style.width = '85px';
+                aiVisionBox.style.height = '60px';
+            } else if(goods.classList.contains('goods-circle')){
+                aiVisionBox.style.width = '65px';
+                aiVisionBox.style.height = '65px';
+            } else {
+                aiVisionBox.style.width = '70px';
+                aiVisionBox.style.height = '70px';
+            }
+            
+            aiVisionBox.style.left = (gLeft - 7) + '%';
+            aiVisionBox.style.top = (gTop - 7) + '%';
+            aiVisionBox.style.display = 'block';
+        }
+
+        // 设置AI视觉状态
+        function setVisionStatus(status) {
+            aiVisionBox.className = 'ai-vision-box';
+            
+            let shapeTip = '';
+            if(goods.classList.contains('goods-rect')) shapeTip = '长方形';
+            else if(goods.classList.contains('goods-circle')) shapeTip = '圆形';
+            
+            if (status === 'scanning') {
+                aiVisionBox.classList.add('scanning');
+                aiVisionTip.textContent = 'AI识别中...';
+            } else if (status === 0) {
+                aiVisionBox.classList.add('good');
+                aiVisionTip.textContent = '已识别：' + shapeTip + '良品';
+            } else if (status === 1) {
+                aiVisionBox.classList.add('bad');
+                aiVisionTip.textContent = '已识别：' + shapeTip + '次品';
+            } else if (status === 2) {
+                aiVisionBox.classList.add('check');
+                aiVisionTip.textContent = '已识别：' + shapeTip + '复检';
+            }
+        }
+
+        function startLaser(laserEl) {
+            laserEl.style.opacity = 1;
+            laserEl.classList.remove('laser-scan');
+            void laserEl.offsetWidth;
+            laserEl.classList.add('laser-scan');
+            setTimeout(()=>{ laserEl.style.opacity = 0; },800);
+        }
+
+        function updateSpeedAnimation() {
+          const dur = 1 / speedScale;
+          beltTexture.style.animationDuration = dur + 's';
+        }
+
+        speedSlider.addEventListener('input', () => {
+          speedScale = parseFloat(speedSlider.value);
+          speedValue.textContent = speedScale.toFixed(1) + 'x';
+          updateSpeedAnimation();
+        });
+
+        // 随机物料
+        function randomGoods(){
+            goodsType = Math.floor(Math.random() * 3);
+            
+            const shapeType = Math.floor(Math.random() * 3);
+            let shapeClass = '';
+            let shapeName = '';
+            
+            if(shapeType === 0){
+                shapeClass = '';
+                shapeName = '';
+            } else if(shapeType === 1){
+                shapeClass = 'goods-rect';
+                shapeName = '长方形';
+            } else {
+                shapeClass = 'goods-circle';
+                shapeName = '圆形';
+            }
+
+            if(goodsType === 0){
+                goods.className = `goods goods-good ${shapeClass}`; 
+                goods.textContent = shapeName + "良品";
+                goodsTypeText.textContent = shapeName + "良品"; 
+                goodsTypeText.className = "text-green";
+            }else if(goodsType === 1){
+                goods.className = `goods goods-bad ${shapeClass}`; 
+                goods.textContent = shapeName + "次品";
+                goodsTypeText.textContent = shapeName + "次品"; 
+                goodsTypeText.className = "text-red";
+            }else{
+                goods.className = `goods goods-check ${shapeClass}`; 
+                goods.textContent = shapeName + "复检";
+                goodsTypeText.textContent = shapeName + "复检"; 
+                goodsTypeText.className = "text-yellow";
+            }
+            
+            goods.style.display = "flex";
+            setVisionStatus('scanning');
+            updateAIVisionBox();
+        }
+
+        // 传送带移动
+        function beltMove(){
+            if(isSorting) return;
+            let l = parseFloat(goods.style.left || 5);
+            l += 0.44 * speedScale;
+            goods.style.left = l + '%';
+            updateAIVisionBox();
+
+            if(goodsType === 0){
+                if(l >= 46 && l <= 52 && !sensorTriggered){
+                    sensorTriggered = true;
+                    sensor1.classList.add('sensor-trigger');
+                    startLaser(laser1);
+                    sensorArea1.classList.add('active');
+                    setVisionStatus(0);
+                    startSorting();
+                }
+            }else{
+                if(l >= 25 && l <= 31 && !sensorTriggered){
+                    sensorTriggered = true;
+                    sensor2.classList.add('sensor-trigger');
+                    startLaser(laser2);
+                    sensorArea2.classList.add('active');
+                    setVisionStatus(goodsType);
+                    startSorting();
+                }
+            }
+        }
+
+        // 开始分拣
+        async function startSorting(){
+            isSorting = true;
+            clearInterval(beltTimer);
+            if(goodsType === 0){ await autoArm1(); }
+            else{ await autoArm2(); }
+            await sleep(300);
+            finishSorting();
+        }
+
+        // 机械臂1
+        async function autoArm1(){
+            arm1State.textContent = "抓取中";
+            arm1.classList.add('arm-active');
+            arm1.style.transform = "rotate(-32deg)";
+            await sleep(400);
+            gripper1.classList.add('gripper-active');
+            goods.classList.add('goods-catch');
+            goods.style.left = '82%'; goods.style.top = '45%';
+            updateAIVisionBox();
+            await sleep(300);
+            arm1.style.transform = "rotate(30deg)";
+            goods.style.left = '89.5%'; goods.style.top = '72%';
+            updateAIVisionBox();
+            await sleep(500);
+            gripper1.classList.remove('gripper-active');
+            goods.classList.remove('goods-catch');
+            goods.classList.add('goods-drop');
+            gCnt[0]++; goodCount.textContent = gCnt[0];
+            totalCount++;
+            document.getElementById('totalCount').innerText = totalCount;
+            updateEfficiency();
+            await sleep(200);
+            arm1.style.transform = "rotate(0deg)";
+            arm1.classList.remove('arm-active');
+            arm1State.textContent = "完成分拣";
+        }
+
+        // 机械臂2
+        async function autoArm2(){
+            arm2State.textContent = "抓取中";
+            arm2.classList.add('arm-active');
+            arm2.style.transform = "rotate(-28deg)";
+            await sleep(400);
+            gripper2.classList.add('gripper-active');
+            goods.classList.add('goods-catch');
+            goods.style.left = '67%'; goods.style.top = '45%';
+            updateAIVisionBox();
+            await sleep(300);
+            if(goodsType === 1){
+                arm2.style.transform = "rotate(16deg)";
+                goods.style.left = '74.5%'; goods.style.top = '72%';
+                gCnt[1]++; badCount.textContent = gCnt[1];
+            }else{
+                arm2.style.transform = "rotate(6deg)";
+                goods.style.left = '59.5%'; goods.style.top = '72%';
+                gCnt[2]++; checkCount.textContent = gCnt[2];
+            }
+            totalCount++;
+            document.getElementById('totalCount').innerText = totalCount;
+            updateEfficiency();
+            updateAIVisionBox();
+            await sleep(500);
+            gripper2.classList.remove('gripper-active');
+            goods.classList.remove('goods-catch');
+            goods.classList.add('goods-drop');
+            await sleep(200);
+            arm2.style.transform = "rotate(0deg)";
+            arm2.classList.remove('arm-active');
+            arm2State.textContent = "完成分拣";
+        }
+
+        // 完成分拣
+        function finishSorting(){
+            slotGood.classList.remove('slot-active');
+            slotBad.classList.remove('slot-active');
+            slotCheck.classList.remove('slot-active');
+            if(goodsType === 0){ 
+                goods.style.left='89.5%'; goods.style.top='72%'; 
+                slotGood.classList.add('slot-active'); 
+            } else if(goodsType ===1){ 
+                goods.style.left='74.5%'; goods.style.top='72%'; 
+                slotBad.classList.add('slot-active'); 
+            } else{ 
+                goods.style.left='59.5%'; goods.style.top='72%'; 
+                slotCheck.classList.add('slot-active'); 
+            }
+            updateAIVisionBox();
+
+            setTimeout(() => {
+                const rect = goods.getBoundingClientRect();
+                const simRect = document.querySelector('.simulate-area').getBoundingClientRect();
+                const x = rect.left - simRect.left + rect.width/2;
+                const y = rect.top - simRect.top + rect.height/2;
+                let color='#4ade80'; if(goodsType===1)color='#f87171'; if(goodsType===2)color='#fbbf24';
+                createExplode(x,y,color);
+                goods.classList.remove('goods-catch','goods-drop');
+                goods.style.display="none";
+                aiVisionBox.style.display = "none";
+                isSorting=false; sensorTriggered=false;
+                sensor1.classList.remove('sensor-trigger');
+                sensor2.classList.remove('sensor-trigger');
+                sensorArea1.classList.remove('active');
+                sensorArea2.classList.remove('active');
+                arm1State.textContent="自动待命";
+                arm2State.textContent="自动待命";
+                setTimeout(()=>{ 
+                    randomGoods(); 
+                    goods.style.left="5%"; goods.style.top="39%"; 
+                    updateAIVisionBox(); 
+                    beltTimer=setInterval(beltMove,30); 
+                },400);
+            },500);
+        }
+
+        // 延时函数
+        function sleep(ms) { return new Promise(r=>setTimeout(r,ms/speedScale)); }
+
+        // 效率计算
+        function updateEfficiency() {
+          if (!startTime || totalCount === 0) {
+            document.getElementById('efficiency').innerText = "0.0 个/分钟";
+            return;
+          }
+          const now = Date.now();
+          const runSec = (now - startTime) / 1000;
+          if (runSec < 1) return;
+          const efficiency = (totalCount / (runSec / 60)).toFixed(1);
+          document.getElementById('efficiency').innerText = `${efficiency} 个/分钟`;
+        }
+
+        // 手动生成物料
+        const manualGood=document.getElementById('manualGood');
+        const manualBad=document.getElementById('manualBad');
+        const manualCheck=document.getElementById('manualCheck');
+
+        function manualCreate(type){
+            isRun=false; clearInterval(beltTimer);
+            goods.style.display="flex"; goods.style.left="5%"; goods.style.top="39%";
+            sensorTriggered=false; isSorting=false;
+            goodsType=type;
+            const shapeType = Math.floor(Math.random() * 3);
+            let shapeClass = '';
+            if(shapeType === 1) shapeClass = 'goods-rect';
+            else if(shapeType === 2) shapeClass = 'goods-circle';
+            if(goodsType===0){ 
+                goods.className="goods goods-good "+shapeClass; goods.textContent="良品"; 
+                goodsTypeText.textContent="良品"; goodsTypeText.className="text-green"; 
+            } else if(goodsType===1){ 
+                goods.className="goods goods-bad"+shapeClass; goods.textContent="次品"; 
+                goodsTypeText.textContent="次品"; goodsTypeText.className="text-red"; 
+            } else{ 
+                goods.className="goods goods-check"+shapeClass; goods.textContent="复检"; 
+                goodsTypeText.textContent="复检"; goodsTypeText.className="text-yellow"; 
+            }
+            setVisionStatus('scanning');
+            updateAIVisionBox();
+            isRun=true; devStatus.textContent="运行中"; devStatus.className="text-green";
+            beltTexture.style.animationPlayState='running';
+            beltTimer=setInterval(beltMove,30);
+        }
+        manualGood.onclick=()=>manualCreate(0);
+        manualBad.onclick=()=>manualCreate(1);
+        manualCheck.onclick=()=>manualCreate(2);
+
+        // 粒子爆炸
+        function createExplode(x,y,color){
+            const container=document.querySelector('.simulate-area');
+            const count=16;
+            for(let i=0;i<count;i++){
+                const p=document.createElement('div');
+                p.classList.add('particle');
+                p.style.background=color;
+                p.style.left=x+'px'; p.style.top=y+'px';
+                const ang=(Math.PI*2*i)/count;
+                const dist=60+Math.random()*40;
+                const tx=Math.cos(ang)*dist;
+                const ty=Math.sin(ang)*dist;
+                p.style.setProperty('--tx',tx+'px');
+                p.style.setProperty('--ty',ty+'px');
+                container.appendChild(p);
+                setTimeout(()=>p.remove(),700);
+            }
+        }
+
+        // 开始按钮
+        startBtn.onclick = () => {
+            if(isRun) return;
+            updateSpeedAnimation();
+            isRun=true;
+            devStatus.textContent="运行中"; devStatus.className="text-green";
+            randomGoods();
+            beltTimer=setInterval(beltMove,30);
+            beltTexture.style.animationPlayState='running';
+            if (!startTime) startTime = Date.now();
+        };
+
+        // 停止按钮
+        stopBtn.onclick = () => {
+            isRun = false;
+            clearInterval(beltTimer);
+            beltTexture.style.animationPlayState = 'paused';
+            isSorting = false;
+            sensorTriggered = false;
+            arm1.style.transform = "rotate(0deg)";
+            arm2.style.transform = "rotate(0deg)";
+            gripper1.classList.remove('gripper-active');
+            gripper2.classList.remove('gripper-active');
+            arm1.classList.remove('arm-active');
+            arm2.classList.remove('arm-active');
+            sensor1.classList.remove('sensor-trigger');
+            sensor2.classList.remove('sensor-trigger');
+            sensorArea1.classList.remove('active');
+            sensorArea2.classList.remove('active');
+            aiVisionBox.style.display = 'none';
+            laser1.style.opacity = 0;
+            laser2.style.opacity = 0;
+            devStatus.textContent = "已停止";
+            devStatus.className = "text-red";
+            arm1State.textContent = "已停机";
+            arm2State.textContent = "已停机";
+        };
+
+        // 复位按钮
+        resetBtn.onclick = () => {
+            isRun=false; 
+            clearInterval(beltTimer);
+            isSorting=false; sensorTriggered=false;
+            arm1.style.transform="rotate(0deg)"; arm2.style.transform="rotate(0deg)";
+            gripper1.classList.remove('gripper-active'); gripper2.classList.remove('gripper-active');
+            goods.style.display="flex"; goods.style.left="5%"; goods.style.top="39%";
+            aiVisionBox.style.display = 'none';
+            sensor1.classList.remove('sensor-trigger');
+            sensor2.classList.remove('sensor-trigger');
+            sensorArea1.classList.remove('active');
+            sensorArea2.classList.remove('active');
+            arm1.classList.remove('arm-active');
+            arm2.classList.remove('arm-active');
+            devStatus.textContent="复位"; devStatus.className="text-blue";
+            arm1State.textContent="自动待命"; arm2State.textContent="自动待命";
+            beltTexture.style.animationPlayState='paused';
+            slotGood.classList.remove('slot-active'); 
+            slotBad.classList.remove('slot-active'); 
+            slotCheck.classList.remove('slot-active');
+            laser1.style.opacity=0; laser2.style.opacity=0;
+            totalCount = 0;
+            startTime = null;
+            document.getElementById('totalCount').innerText = 0;
+            document.getElementById('efficiency').innerText = "0.0 个/分钟";
+        };
+
+        // 部件科普介绍数据
+const introData = [
+    {
+        title: "输送机构",
+        body: `
+<strong>一、设计特点</strong><br>
+采用防滑耐磨环形皮带搭配调速减速电机，结构紧凑、运行噪音低，支持无级调速，适配不同分拣节拍。<br><br>
+<strong>二、工作原理</strong><br>
+电机带动滚筒转动，依靠皮带摩擦力带动物料匀速向前移动，实现物料连续、平稳流水线输送。<br><br>
+<strong>三、主要作用</strong><br>
+为整个分拣系统提供物料输送动力，保证物料按固定节拍到达识别区、分拣区，是自动化分拣的基础载体。
+        `
+    },
+    {
+        title: "视觉识别模块",
+        body: `
+<strong>一、设计特点</strong><br>
+由高清工业相机、补光光源、图像处理算法组成，抗环境光线干扰，抓拍速度快、识别精度高。<br><br>
+<strong>二、工作原理</strong><br>
+相机实时拍摄物料图像，通过图像处理算法提取颜色、外形、瑕疵、条码等信息，完成智能分类判断。<br><br>
+<strong>三、主要作用</strong><br>
+替代人眼完成物料外观检测、品类区分、次品筛选，给控制系统下发分拣判断信号。
+        `
+    },
+    {
+        title: "主控控制系统",
+        body: `
+<strong>一、设计特点</strong><br>
+以PLC或工控机为核心，模块化程序设计，抗工业电磁干扰，稳定性强，支持多设备联动逻辑编程。<br><br>
+<strong>二、工作原理</strong><br>
+接收传感器、视觉模块的信号，按照预设逻辑进行运算判断，依次控制传送带、机械臂、执行机构协同动作。<br><br>
+<strong>三、主要作用</strong><br>
+整台分拣机器人的“大脑”，统筹所有设备运行逻辑，实现全自动、有序化分拣流程。
+        `
+    },
+    {
+        title: "分拣执行机构",
+        body: `
+<strong>一、设计特点</strong><br>
+多采用多自由度机械臂、气动推杆、吸盘结构，响应速度快、定位精准，可往复高频次作业。<br><br>
+<strong>二、工作原理</strong><br>
+接收主控下发的动作指令，通过电机或气缸驱动机械结构完成伸出、抓取、搬运、投放等分拣动作。<br><br>
+<strong>三、主要作用</strong><br>
+直接接触并处理物料，将不同类别物料分别抓取、分流，完成最终分拣执行动作。
+        `
+    },
+    {
+        title: "光电传感器组",
+        body: `
+<strong>一、设计特点</strong><br>
+红外对射/漫反射式设计，体积小、响应灵敏，不受环境光照影响，适合工业现场长期使用。<br><br>
+<strong>二、工作原理</strong><br>
+利用红外光线发射与接收变化，当物料遮挡光线时触发电平信号变化，实现物料检测与位置定位。<br><br>
+<strong>三、主要作用</strong><br>
+检测物料有无、判断物料到位位置、触发视觉识别与分拣动作，是整机信号感应的关键部件。
+        `
+    }
+];
+
+const introModal = document.getElementById('introModal');
+const introTitle = document.getElementById('introTitle');
+const introBody = document.getElementById('introBody');
+
+// 打开介绍弹窗
+function openIntroModal(index){
+    const item = introData[index];
+    introTitle.innerText = item.title;
+    introBody.innerHTML = item.body;
+    introModal.classList.add('show');
+}
+// 关闭介绍弹窗
+function closeIntroModal(){
+    introModal.classList.remove('show');
+}
+// 点击弹窗背景关闭
+introModal.onclick = function(e){
+    if(e.target === introModal){
+        closeIntroModal();
+    }
+}
+    </script>
+</body>
+</html>

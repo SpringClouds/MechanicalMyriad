@@ -1,0 +1,1477 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>仿生鸟机器人 | 智能扑翼飞行仿真系统</title>
+<style>
+    * {
+        margin: 0;
+        padding: 0;
+        box-sizing: border-box;
+        font-family: "Microsoft YaHei", sans-serif;
+        user-select: none;
+    }
+    :root {
+        --p: #00f0ff;
+        --s: #9d4edd;
+        --bg: #050a18;
+        --card: #0c162d;
+        --text: #e0e0ff;
+        --muted: #8ba4f9;
+    }
+    body {
+        background: var(--bg);
+        color: var(--text);
+        background-image:
+            linear-gradient(rgba(0,255,255,0.06) 1px, transparent 1px),
+            linear-gradient(rgba(0,255,255,0.06) 1px, transparent 1px);
+        background-size: 40px 40px;
+        padding-bottom: 40px;
+        position: relative;
+        min-height: 100vh;
+    }
+
+    #nav {
+        position: fixed; top:0; left:0; width:100%; height:60px;
+        background: rgba(5,10,24,0.97);
+        display: flex; align-items:center; justify-content:center; gap:30px;
+        border-bottom:1px solid rgba(0,255,255,0.3);
+        z-index:9999;
+    }
+    #nav a { color:#e0f0ff; text-decoration:none; font-size:16px; transition:0.3s; }
+    #nav a:hover { color:var(--p); }
+
+    .carousel {
+        width:100%; height:650px; margin-top:60px; position:relative; overflow:hidden;
+    }
+    .carousel-inner {
+        width:100%; height:100%; position:relative;
+    }
+    .carousel-item {
+        width:100%; height:100%; position:absolute; top:0; left:0;
+        opacity:0; transition:opacity 1s ease;
+    }
+    .carousel-item.active { opacity:1; }
+    .carousel-item img {
+        width:100%; height:100%; object-fit:cover;
+    }
+
+    .carousel-btn {
+        position:absolute; top:50%; transform:translateY(-50%);
+        width:50px; height:50px; border-radius:50%;
+        background:rgba(0,0,0,0.4); color:var(--p);
+        border:1px solid var(--p); font-size:22px;
+        cursor:pointer; z-index:10; transition:0.3s;
+    }
+    .prev { left:20px; }
+    .next { right:20px; }
+    .carousel-btn:hover { background:rgba(0,255,255,0.2); box-shadow:0 0 15px #00f0ff; }
+
+    .dots {
+        position:absolute; bottom:20px; left:50%; transform:translateX(-50%);
+        display:flex; gap:10px;
+    }
+    .dot {
+        width:12px; height:12px; border-radius:50%;
+        background:rgba(255,255,255,0.2); cursor:pointer;
+        transition:0.3s;
+    }
+    .dot.active { background:var(--p); transform:scale(1.2); box-shadow:0 0 8px #00f0ff; }
+
+    .container {
+        max-width:1500px; margin:0 auto; padding:20px;
+    }
+    header {
+        text-align:center; padding:30px 0;
+    }
+    header h1 {
+        font-size:34px;
+        background: linear-gradient(90deg, #0ff, #9d4edd);
+        background-clip: text;
+        -webkit-background-clip: text;
+        -webkit-text-fill-color: transparent;
+        margin-bottom:10px;
+    }
+    header p {
+        color:var(--muted); font-size:16px;
+    }
+
+    .section {
+        background:var(--card); border-radius:18px; padding:28px;
+        margin-bottom:25px; border:1px solid rgba(0,255,255,0.15);
+    }
+    .section h2 {
+        color:var(--p); margin-bottom:20px; font-size:24px;
+        border-left:4px solid var(--p); padding-left:10px;
+    }
+
+    .simu-layout {
+        display: flex;
+        gap: 20px;
+        align-items: flex-start;
+    }
+    .simu-left {
+        flex: 1;
+    }
+    canvas {
+        width:100%; border-radius:16px;
+        box-shadow: 0 0 20px rgba(0,0,0,0.2);
+    }
+    .simu-right {
+    width: 320px;
+    background: #12203a;
+    border-radius: 16px;
+    padding: 24px;
+    border: 1px solid rgba(0,255,255,0.2);
+    position: relative;
+}
+    .simu-right h3 {
+        color: var(--p);
+        text-align: center;
+        margin-bottom: 20px;
+        font-size: 18px;
+    }
+    .control-panel {
+        display: flex;
+        flex-direction: column;
+        gap: 14px;
+    }
+    .control-group {
+        width: 100%;
+    }
+    .control-group label {
+        color:#b3f0ff; font-size:14px; display:block; margin-bottom:6px;
+    }
+    input[type="range"] {
+        width:100%; height:4px; 
+        background: linear-gradient(90deg,#00f0ff,#2a9d8f);
+        border-radius:4px; outline:none;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+        width:16px; height:16px; background:#00f0ff; 
+        border-radius:50%; border:2px solid #fff;
+        box-shadow:0 0 8px #00f0ff; cursor:pointer;
+    }
+    .value {
+        color:#0ff; font-size:13px; margin-top:4px;
+        font-family: monospace;
+    }
+
+    .pose-btns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 10px;
+        margin-top: 8px;
+    }
+    .pose-btns button {
+        padding: 8px 0;
+        background: #0f2744;
+        border: 1px solid var(--p);
+        color: var(--p);
+        border-radius: 8px;
+        cursor: pointer;
+        transition: 0.3s;
+    }
+    .pose-btns button:hover {
+        background: #00f0ff22;
+        box-shadow:0 0 10px #00f0ff55;
+    }
+    .pose-btns button:disabled {
+        opacity: 0.4;
+        cursor: not-allowed;
+    }
+
+    .grid {
+        display:grid; grid-template-columns:repeat(auto-fill,minmax(260px,1fr));
+        gap:18px; margin-top:20px;
+    }
+    .card {
+        background:#12203a; padding:18px; border-radius:14px;
+        border:1px solid rgba(157,78,221,0.2);
+        transition:0.3s;
+        cursor:pointer;
+    }
+    .card:hover {
+        border-color:var(--s); box-shadow:0 0 20px rgba(157,78,221,0.15);
+        transform:translateY(-3px);
+    }
+    .card-img {
+        width:100%; height:160px; border-radius:10px;
+        object-fit:cover; margin-bottom:12px;
+        border:1px solid rgba(0,255,255,0.2);
+        cursor: zoom-in;
+    }
+    .card h4 {
+        color:var(--s); margin-bottom:8px;
+    }
+    .card p {
+        color:#aaa; font-size:14px; line-height:1.5;
+    }
+
+    .modal-mask {
+        position:fixed; top:0; left:0; width:100%; height:100%;
+        background:rgba(0,0,0,0.75); z-index:10000;
+        display:none; align-items:center; justify-content:center;
+    }
+    .modal-box {
+        width:90%; max-width:700px;
+        background:#0c162d; border-radius:20px;
+        border:1px solid var(--p); padding:30px;
+        box-shadow:0 0 30px #00f0ff44;
+        position:relative;
+        display:grid;
+        grid-template-columns: 240px 1fr;
+        gap:25px;
+        align-items: start;
+    }
+    .modal-img {
+        width:100%; border-radius:12px;
+        object-fit:cover;
+        border:1px solid rgba(0,255,255,0.25);
+        cursor: zoom-in;
+    }
+    .modal-close {
+        position:absolute; top:15px; right:20px;
+        font-size:24px; color:var(--p); cursor:pointer;
+    }
+    .modal-text h3 {
+        color:var(--p); margin-bottom:15px;
+        font-size:22px;
+    }
+    .modal-item {
+        margin:12px 0;
+        color:#e0e0ff;
+        line-height:1.7;
+    }
+    .modal-item strong {
+        color:var(--s);
+    }
+
+    .img-zoom-mask {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0,0,0,0.92);
+        z-index: 20000;
+        display: none;
+        align-items: center;
+        justify-content: center;
+        cursor: zoom-out;
+    }
+    .img-zoom-mask img {
+        max-width: 90%;
+        max-height: 90%;
+        border-radius: 8px;
+        object-fit: contain;
+    }
+
+    @media (max-width:900px){
+        .simu-layout {
+            flex-direction: column;
+        }
+        .simu-right {
+            width: 100%;
+        }
+    }
+    @media (max-width:600px){
+        .modal-box{
+            grid-template-columns: 1fr;
+        }
+    }
+    /* 全屏脉冲波纹 */
+.ripple {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 0;
+    height: 0;
+    border-radius: 50%;
+    background: rgba(0, 240, 255, 0.25);
+    pointer-events: none;
+    z-index: 99999;
+    animation: rippleAnim 1.2s ease-out forwards;
+}
+@keyframes rippleAnim {
+    0% { width: 0; height: 0; opacity: 1; }
+    100% { width: 300vw; height: 300vw; opacity: 0; }
+}
+.auto-btn {
+    width: 100%;
+    padding: 10px 0;
+    background: #9d4edd;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 12px;
+    transition: 0.3s;
+}
+.auto-btn:hover {
+    box-shadow: 0 0 12px #9d4edd;
+}
+.auto-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+}
+/* 协同交互按钮 */
+.synergy-btn {
+    width: 100%;
+    padding: 10px 0;
+    background: #00c9b7;
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    font-size: 15px;
+    cursor: pointer;
+    margin-top: 10px;
+    transition: 0.3s;
+}
+.synergy-btn:hover {
+    box-shadow: 0 0 12px #00c9b7;
+}
+.synergy-btn.active {
+    background: #ff6b6b;
+}
+
+/* ========== 全息小鸟AI助手 ========== */
+.holo-bird {
+    position: fixed;
+    right: 30px;
+    bottom: 30px;
+    width: 180px;
+    height: 180px;
+    z-index: 888;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    filter: drop-shadow(0 0 15px #00f0ff);
+    cursor: pointer;
+}
+.holo-bird canvas {
+    width: 100%;
+    height: 100%;
+    background: transparent !important;
+    box-shadow: none !important;
+}
+.ai-status {
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-size: 12px;
+    color: #00f0ff;
+    background: rgba(0,10,20,0.7);
+    padding: 3px 8px;
+    border-radius: 10px;
+    white-space: nowrap;
+}
+.ai-panel {
+    position: fixed;
+    right: 220px;
+    bottom: 30px;
+    width: 280px;
+    background: #0c162d;
+    border: 1px solid #00f0ff;
+    border-radius: 12px;
+    padding: 16px;
+    z-index: 9999;
+    box-shadow: 0 0 20px #00f0ff33;
+    display: none;
+}
+.ai-panel h4 {
+    color: #00f0ff;
+    margin-bottom: 10px;
+    font-size: 15px;
+}
+.ai-cmd {
+    font-size: 12px;
+    color: #ccc;
+    margin: 4px 0;
+}
+.ai-voice-btn {
+    width: 100%;
+    padding: 8px;
+    background: #00f0ff;
+    color: #000;
+    border: none;
+    border-radius: 6px;
+    margin-top: 10px;
+    cursor: pointer;
+}
+.ai-voice-btn.active {
+    background: #ff3366;
+    color: #fff;
+}
+
+/* 对话指令弹窗 */
+.cmd-dialog {
+    position: absolute;
+    bottom: 80px;
+    left: 0;
+    width: 100%;
+    background: #0c162d;
+    border: 1px solid var(--p);
+    border-radius: 8px;
+    padding: 10px 12px;
+    display: none;
+    z-index: 9999;
+    box-shadow: 0 0 15px #00f0ff35;
+}
+.cmd-dialog .title {
+    color: var(--p);
+    font-size: 13px;
+    margin-bottom: 6px;
+}
+.cmd-dialog input {
+    width: 100%;
+    height: 32px;
+    padding: 0 10px;
+    background: #050a18;
+    border: 1px solid rgba(0,255,255,0.3);
+    border-radius: 6px;
+    color: #0ff;
+    font-size: 14px;
+    outline: none;
+}
+.cmd-dialog .close-btn {
+    position: absolute;
+    right: 12px;
+    top: 10px;
+    color: var(--p);
+    font-size: 16px;
+    cursor: pointer;
+    background: none;
+    border: none;
+}
+/* 天气按钮样式 */
+.weather-btns {
+    display: flex;
+    gap: 6px;
+    margin-top: 8px;
+}
+.weather-btn {
+    flex: 1;
+    padding: 8px 0;
+    background: #1a2942;
+    border: 1px solid #00f0ff80;
+    color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    font-size: 14px;
+    transition: 0.2s;
+}
+.weather-btn.active {
+    background: #00f0ff33;
+    border-color:#00f0ff;
+}
+</style>
+</head>
+<body>
+
+<!-- AI全息小鸟助手 -->
+<div class="holo-bird" id="holoBird">
+    <canvas id="holoCanvas"></canvas>
+    <div class="ai-status" id="aiStatus">点击唤醒 · AI栩栩小助手</div>
+</div>
+<div class="ai-panel" id="aiPanel">
+    <h4>🎤 语音指令库</h4>
+    <div class="ai-cmd">• 启动飞行 / 停止飞行</div>
+    <div class="ai-cmd">• 悬浮、上升、俯冲、滑翔、掉头、前进、左转、右转</div>
+    <div class="ai-cmd">• 晴天\雨天\雪天</div>
+    <div class="ai-cmd">• 协同交互模式：一字行 / 三角形 / 菱形</div>
+   
+    <div class="ai-cmd">• 自动演示 / 复位归位</div>
+    <button class="ai-voice-btn" id="aiVoiceBtn">开始语音识别</button>
+</div>
+
+<div class="img-zoom-mask" id="imgZoomMask">
+    <img id="zoomImg" src="">
+</div>
+
+<div id="nav">
+    <a href="index.html">⬅返回首页</a>
+    <a href="#simu">飞行仿真</a>
+    <a href="#principle">工作原理</a>
+    <a href="#parts">核心零件</a>
+    <a href="#apply">实际应用</a>
+</div>
+
+<div class="carousel" id="carousel">
+    <div class="carousel-inner">
+        <div class="carousel-item active"><img src="images/robot-bionic-01.jpg"></div>
+        <div class="carousel-item"><img src="images/robot-bionic-02.jpg"></div>
+        <div class="carousel-item"><img src="images/robot-bionic-03.jpg"></div>
+        <div class="carousel-item"><img src="images/robot-bionic-04.jpg"></div>
+    </div>
+    <button class="carousel-btn prev" onclick="prev()"><</button>
+    <button class="carousel-btn next" onclick="next()">></button>
+    <div class="dots">
+        <span class="dot active" onclick="go(0)"></span>
+        <span class="dot active" onclick="go(1)"></span>
+        <span class="dot active" onclick="go(2)"></span>
+        <span class="dot active" onclick="go(3)"></span>
+    </div>
+</div>
+
+<div class="container">
+    <header>
+        <h1>🦅 仿生鸟机器人 · 智能扑翼飞行仿真交互中心</h1>
+        <p>实时仿真｜扑翼控制｜气动交互｜结构科普</p>
+    </header>
+
+    <section id="simu" class="section">
+        <h2>一、飞行交互仿真</h2>
+        <div class="simu-layout">
+            
+            <div class="simu-left">
+                <div class="control-group">
+    <label>🌤️ 环境切换</label>
+    <div class="weather-btns">
+        <button class="weather-btn active" data-weather="sunny">晴天</button>
+        <button class="weather-btn" data-weather="rain">雨天</button>
+        <button class="weather-btn" data-weather="snow">雪天</button>
+    </div>
+</div>
+                <canvas id="c" width="900" height="430"></canvas>
+                <div style="margin-top: 16px; background:#0a1428; padding:14px; border-radius:10px; border:1px solid rgba(0,255,255,0.2);">
+                    <div style="color:#00f0ff; font-size:15px; margin-bottom:8px; font-weight:bold;">📖 飞行仿真使用说明</div>
+                    <div style="color:#b3f0ff; font-size:13px; line-height:1.7;">
+                        1. 先点击右侧「开启旅行」激活仿生鸟飞行仿真<br>
+                        2. 上方可切换晴天/雨天/雪天，自动播放专属语音播报<br>
+                        3. 右侧按钮可控制悬停、上升、俯冲、滑翔、掉头等姿态<br>
+                        4. 开启协同交互模式，可输入：一字行 / 三角形 / 菱形 自动列队<br>
+                        5. 自动演示模式可一键循环所有标准飞行动作<br>
+                        6. 点击右下角全息小鸟，可使用语音<br>
+                        7. 碰到边界会自动反弹防撞，点击复位可回到初始位置<br>
+                        8. 点击小鸟后方会自动先掉头，再飞往目标点
+                    </div>
+                </div>
+            </div>
+
+            <div class="simu-right">
+                <h3>🎮 飞行参数控制</h3>
+                <div class="control-panel">
+                    <div class="cmd-dialog" id="cmdDialog">
+                        <button class="close-btn" id="closeCmd">×</button>
+                        <div class="title">使用方法：输入 一字行 / 三角形 / 菱形，按enter键</div>
+                        <input type="text" id="cmdInput" placeholder="请输入指令">
+                    </div>
+                    <div class="control-group">
+                        <label>🪽 拍打频率</label>
+                        <input type="range" id="freq" min="0.5" max="5" step="0.1" value="2.2" disabled>
+                        <div class="value" id="freqVal">2.2 Hz</div>
+                    </div>
+                    <div class="control-group">
+                        <label>⚡ 振幅角度</label>
+                        <input type="range" id="amp" min="10" max="55" value="32" disabled>
+                        <div class="value" id="ampVal">32°</div>
+                    </div>
+                    <div class="control-group">
+                        <label>📈 升力系数</label>
+                        <input type="range" id="lift" min="15" max="85" value="48" disabled>
+                        <div class="value" id="liftVal">48</div>
+                    </div>
+                    
+                    <div class="control-group">
+                        <label>🛫 预设飞行姿态</label>
+                        <div class="pose-btns">
+                            <button id="btnHover" onclick="playAction('hover')">悬停</button>
+                            <button id="btnUp" onclick="playAction('up')">上升</button>
+                            <button id="btnDown" onclick="playAction('down')">俯冲</button>
+                            <button id="btnGlide" onclick="playAction('glide')">滑翔</button>
+                            <button id="btnTurn" onclick="playAction('turn')">掉头</button>
+                            <button id="btnForward" onclick="playAction('forward')">前进</button>
+                            <button id="btnLeft" onclick="playAction('left')">左转</button>
+                            <button id="btnRight" onclick="playAction('right')">右转</button>
+                            <button id="btnReset" onclick="resetBird()">复位归位</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section id="principle" class="section">
+        <h2>二、工作原理</h2>
+        <p style="color:#aaa; line-height:1.7;">
+            仿生鸟通过扑翼运动产生升力与推力，模拟真实鸟类飞行机制。
+            翅膀上下快速扇动形成空气压差，控制系统实时调节频率、振幅、升力系数，
+            实现悬停、上升、下降等稳定飞行姿态。
+        </p>
+    </section>
+
+    <section id="parts" class="section">
+        <h2>三、核心部件</h2>
+        <p>点击详述</p>
+        <div class="grid">
+            <div class="card" data-id="motor">
+                <img class="card-img" src="images/robot-bionic-05.jpg">
+                <h4>扑翼驱动电机</h4>
+                <p>提供翅膀动力，精准控制频率与振幅。</p>
+            </div>
+            <div class="card" data-id="wing">
+                <img class="card-img" src="images/robot-bionic-07.jpg">
+                <h4>碳纤维机翼</h4>
+                <p>轻量化高强度，产生稳定升力，降低风阻。</p>
+            </div>
+            <div class="card" data-id="mcu">
+                <img class="card-img" src="images/robot-bionic-09.jpg">
+                <h4>主控芯片</h4>
+                <p>实时运算飞行数据，调节飞行姿态与平衡。</p>
+            </div>
+            <div class="card" data-id="sensor">
+                <img class="card-img" src="images/robot-bionic-12.jpg">
+                <h4>姿态传感器</h4>
+                <p>检测角度、速度、高度，保证飞行稳定。</p>
+            </div>
+        </div>
+    </section>
+
+    <section id="apply" class="section">
+        <h2>四、实际应用</h2>
+        <div style="color:#aaa; line-height:1.8;">
+            <p style="margin-bottom:12px;">
+                <strong style="color:var(--s);">1. 低空侦察巡检</strong><br>
+                仿生鸟体型小巧、飞行噪音低、隐蔽性强，可用于城市楼宇、森林山区、电力线路、油气管道低空自主巡检，规避复杂地形障碍，完成图像采集与数据回传。
+            </p>
+            <p style="margin-bottom:12px;">
+                <strong style="color:var(--s);">2. 环境生态监测</strong><br>
+                搭载温湿度、空气质量、红外传感设备，对自然保护区、湿地、河流流域进行常态化生态监测，追踪野生动物活动轨迹，实现无干扰野外调研。
+            </p>
+            <p style="margin-bottom:12px;">
+                <strong style="color:var(--s);">3. 科普教育与竞赛展示</strong><br>
+               适用于高校科创竞赛、科技馆展品、中小学人工智能科普课堂，直观展示仿生飞行原理、自动控制、姿态解算等技术，作为教学与实训平台。
+            </p>
+            <p style="margin-bottom:12px;">
+                <strong style="color:var(--s);">4. 室内狭小空间作业</strong><br>
+                可在仓库、厂房、楼宇内部等狭小复杂空间灵活穿梭，完成安防巡逻、隐患排查、定点视频监控，弥补传统无人机难以进入的场景短板。
+            </p>
+            <p>
+                <strong style="color:var(--s);">5. 科研仿生技术研究</strong><br>
+                为扑翼空气动力学、飞行姿态控制、智能避障算法、轻量化结构设计提供实物实验平台，支撑高校与实验室仿生机器人领域科研攻关。
+            </p>
+        </div>
+    </section>
+</div>
+
+<div class="modal-mask" id="modalMask">
+    <div class="modal-box">
+        <span class="modal-close" onclick="closeModal()">×</span>
+        <img class="modal-img" id="modalImg" src="">
+        <div class="modal-text">
+            <h3 id="modalTitle">部件名称</h3>
+            <div class="modal-item">
+                <strong>工作原理：</strong><span id="modalPrinciple"></span>
+            </div>
+            <div class="modal-item">
+                <strong>主要作用：</strong><span id="modalFunc"></span>
+            </div>
+            <div class="modal-item">
+                <strong>结构特点：</strong><span id="modalFeature"></span>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+// 点击飞往全局变量
+let targetFlyX = 0;
+let targetFlyY = 0;
+let hasFlyTarget = false;
+let needTurn = false; // 是否需要先掉头
+
+let cur = 0;
+const items = document.querySelectorAll('.carousel-item');
+const dots = document.querySelectorAll('.dot');
+const len = items.length;
+function update(){items.forEach((i,idx)=>i.classList.toggle('active',idx===cur));dots.forEach((d,idx)=>d.classList.toggle('active',idx===cur));}
+function next(){cur=(cur+1)%len;update();}
+function prev(){cur=(cur-1+len)%len;update();}
+function go(i){cur=i;update();}
+setInterval(next,3000);
+
+const canvas = document.getElementById('c');
+const ctx = canvas.getContext('2d');
+const baseCenterX = canvas.width / 2;
+const baseCenterY = canvas.height / 2;
+
+let isPlaying = false;
+let animProgress = 0;
+let currentAction = "hover";
+
+let flipDir = 1;
+let canStartFly = false;
+
+const baseOffsetX = 120;
+const baseOffsetYUp = -80;
+const baseOffsetYDown = 80;
+let isAutoDemo = false;
+const demoActions = ["hover","up","glide","down","turn","forward","left","right"];
+let demoIndex = 0;
+const bounds = { left: 120, right: 780, top: 80, bottom: 350 };
+let shieldEffect = 0;
+
+let enableSynergy = false;
+let birdForm = "normal";
+
+const formConfig = {
+    normal: [
+        { x: -180, y: -80 },
+        { x: 180,  y: -80 },
+        { x: -180, y: 80 },
+        { x: 180,  y: 80 }
+    ],
+    line: [
+        { x: -220, y: 0 },
+        { x: -80,  y: 0 },
+        { x: 80,   y: 0 },
+        { x: 220,  y: 0 }
+    ],
+    triangle: [
+        { x: 0,    y: -100 },
+        { x: -140, y: 40 },
+        { x: 0,    y: 40 },
+        { x: 140,  y:  40 }
+    ],
+    random: [
+        { x: 0,    y: -90 },
+        { x: -110, y: -20 },
+        { x: 110,  y: -20 },
+        { x: 0,    y: 50 }
+    ]
+};
+let birdOffsets = JSON.parse(JSON.stringify(formConfig.normal));
+
+const actionCfg = {
+    hover:  { dur:1200, tilt:0,   freq:2.2, amp:32 },
+    up:     { dur:1600, tilt:-15, freq:4.2, amp:55 },
+    down:   { dur:1600, tilt:15,  freq:1.0, amp:20 },
+    glide:  { dur:2200, tilt:8,   freq:0,   amp:0 },
+    turn:   { dur:800,  tilt:0,   freq:2.0, amp:25 },
+    forward:{ dur:1800, tilt:0,   freq:3.0, amp:40 },
+    left:   { dur:1500, tilt:-25, freq:2.0, amp:30 },
+    right:  { dur:1500, tilt:25, freq:2.0, amp:30 }
+};
+
+let nowTilt = 0;
+let nowWingFreq = 2.2;
+let nowWingAmp = 32;
+let nowOffsetX = 0;
+let nowOffsetY = 0;
+
+let clouds = [];
+for(let i=0;i<6;i++){
+    clouds.push({
+        x: Math.random() * 900,
+        y: Math.random() * 180,
+        w: 80 + Math.random() * 120,
+        speed: 0.2 + Math.random() * 0.3
+    });
+}
+
+const freqI = document.getElementById('freq');
+const ampI = document.getElementById('amp');
+const liftI = document.getElementById('lift');
+const freqVal = document.getElementById('freqVal');
+const ampVal = document.getElementById('ampVal');
+const liftVal = document.getElementById('liftVal');
+
+function birdSpeak() {
+    const audio = new Audio('images/xxstart.mp3');
+    audio.play();
+}
+
+const controlPanel = document.querySelector('.control-panel');
+const startBtn = document.createElement('button');
+startBtn.innerText = '开启旅行';
+startBtn.style.width = '100%';
+startBtn.style.padding = '12px 0';
+startBtn.style.background = '#00f0ff';
+startBtn.style.color = '#050a18';
+startBtn.style.border = 'none';
+startBtn.style.borderRadius = '10px';
+startBtn.style.fontSize = '16px';
+startBtn.style.fontWeight = 'bold';
+startBtn.style.cursor = 'pointer';
+startBtn.style.marginBottom = '16px';
+controlPanel.prepend(startBtn);
+
+startBtn.onclick = function(){
+    if(canStartFly) return;
+    canStartFly = true;
+    birdSpeak();
+    startBtn.innerText = '旅行已开启';
+    startBtn.style.background = '#9d4edd';
+    startBtn.style.color = '#fff';
+};
+
+const autoBtn = document.createElement('button');
+autoBtn.innerText = '🤖 自动演示模式';
+autoBtn.className = 'auto-btn';
+controlPanel.appendChild(autoBtn);
+
+const synergyBtn = document.createElement('button');
+synergyBtn.innerText = '🤝 协同交互模式';
+synergyBtn.className = 'synergy-btn';
+controlPanel.appendChild(synergyBtn);
+
+const cmdDialog = document.getElementById('cmdDialog');
+const cmdInput = document.getElementById('cmdInput');
+
+function setBirdForm(formName){
+    birdForm = formName;
+    const target = formConfig[formName];
+    for(let i=0;i<4;i++){
+        birdOffsets[i].tx = target[i].x;
+        birdOffsets[i].ty = target[i].y;
+    }
+}
+
+function parseCommand(txt){
+    if(txt.includes("一字行")){
+        setBirdForm("line");
+        return "已列队成一字行";
+    }else if(txt.includes("三角形")){
+        setBirdForm("triangle");
+        return "已列队成三角形";
+    }else if(txt.includes("菱形")){
+        setBirdForm("random");
+        return "已列队菱形";
+    }else{
+        return "未知指令";
+    }
+}
+
+synergyBtn.onclick = function(){
+    enableSynergy = !enableSynergy;
+    if(enableSynergy){
+        synergyBtn.classList.add('active');
+        synergyBtn.innerText = '🤝 关闭协同模式';
+        cmdDialog.style.display = 'block';
+        cmdInput.focus();
+    }else{
+        synergyBtn.classList.remove('active');
+        synergyBtn.innerText = '🤝 协同交互模式';
+        cmdDialog.style.display = 'none';
+    }
+};
+
+cmdInput.addEventListener('keydown',function(e){
+    if(e.key === 'Enter'){
+        const res = parseCommand(this.value.trim());
+        alert(res);
+        this.value = '';
+    }
+});
+document.getElementById('closeCmd').onclick = function(){
+    cmdDialog.style.display = 'none';
+};
+
+function updateBirdFormLerp(){
+    birdOffsets.forEach(p=>{
+        if(p.tx === undefined) return;
+        p.x += (p.tx - p.x) * 0.05;
+        p.y += (p.ty - p.y) * 0.05;
+    });
+}
+
+async function runAutoDemo(){
+    if(isAutoDemo) return;
+    isAutoDemo = true;
+    autoBtn.disabled = true;
+    for(let act of demoActions){
+        playAction(act);
+        await new Promise(res=>setTimeout(res, 2200));
+    }
+    resetBird();
+    isAutoDemo = false;
+    autoBtn.disabled = false;
+}
+autoBtn.onclick = runAutoDemo;
+
+function createRipple() {
+    const r = document.createElement('div');
+    r.className = 'ripple';
+    document.body.appendChild(r);
+    setTimeout(() => r.remove(), 1500);
+}
+
+function resetBird(){
+    if(isPlaying) return;
+    createRipple();
+    nowOffsetX = 0;
+    nowOffsetY = 0;
+    nowTilt = 0;
+    flipDir = 1;
+    nowWingFreq = 2.2;
+    nowWingAmp = 32;
+    shieldEffect = 0;
+    hasFlyTarget = false;
+    needTurn = false;
+    updateUI();
+}
+
+function updateUI(){
+    freqI.value = nowWingFreq;
+    ampI.value = nowWingAmp;
+    liftI.value = Math.abs(nowTilt);
+    freqVal.textContent = nowWingFreq.toFixed(1) + " Hz";
+    ampVal.textContent = nowWingAmp.toFixed(0) + "°";
+    liftVal.textContent = Math.abs(nowTilt).toFixed(0);
+}
+
+function playAction(type){
+    if(isPlaying) return;
+    isPlaying = true;
+    currentAction = type;
+    animProgress = 0;
+    setBtnDisabled(true);
+    const cfg = actionCfg[type];
+    const start = performance.now();
+    let targetX = nowOffsetX;
+    let targetY = nowOffsetY;
+
+    if(type === "up") targetY += baseOffsetYUp;
+    else if(type === "down") targetY += baseOffsetYDown;
+    else if(type === "glide"){ targetX += baseOffsetX * flipDir; targetY += 40; }
+    else if(type === "forward") targetX += baseOffsetX * flipDir;
+    else if(type === "left") targetX += -60 * flipDir;
+    else if(type === "right") targetX += 60 * flipDir;
+    else if(type === "turn") flipDir *= -1;
+
+    function animate(){
+        const t = performance.now() - start;
+        animProgress = Math.min(t / cfg.dur, 1);
+        nowTilt = lerp(nowTilt, cfg.tilt, 0.1);
+        nowWingFreq = lerp(nowWingFreq, cfg.freq, 0.1);
+        nowWingAmp = lerp(nowWingAmp, cfg.amp, 0.1);
+        nowOffsetX = lerp(nowOffsetX, targetX, 0.07);
+        nowOffsetY = lerp(nowOffsetY, targetY, 0.07);
+        updateUI();
+        if(animProgress >= 1){
+            isPlaying = false;
+            setBtnDisabled(false);
+            nowOffsetX = targetX;
+            nowOffsetY = targetY;
+            
+            // 掉头完成后继续飞行
+            if(needTurn && type === "turn"){
+                needTurn = false;
+                hasFlyTarget = true;
+            }
+            return;
+        }
+        requestAnimationFrame(animate);
+    }
+    animate();
+}
+
+function lerp(a,b,t){ return a + (b-a)*t; }
+function wingCurve(t){ if(nowWingAmp <=0) return 0; let raw=Math.sin(t); return raw>0?raw*1.3:raw*0.7; }
+
+function setBtnDisabled(flag){
+    document.getElementById('btnHover').disabled=flag;
+    document.getElementById('btnUp').disabled=flag;
+    document.getElementById('btnDown').disabled=flag;
+    document.getElementById('btnGlide').disabled=flag;
+    document.getElementById('btnTurn').disabled=flag;
+    document.getElementById('btnForward').disabled=flag;
+    document.getElementById('btnLeft').disabled=flag;
+    document.getElementById('btnRight').disabled=flag;
+    document.getElementById('btnReset').disabled=flag;
+}
+
+function checkBounds(){
+    let cx = baseCenterX + nowOffsetX;
+    let cy = baseCenterY + nowOffsetY;
+    let hit = false;
+    if(cx < bounds.left){ nowOffsetX +=15; flipDir=1; hit=true; }
+    if(cx > bounds.right){ nowOffsetX -=15; flipDir=-1; hit=true; }
+    if(cy < bounds.top){ nowOffsetY +=15; nowTilt=actionCfg.down.tilt; nowWingFreq=actionCfg.down.freq; nowWingAmp=actionCfg.down.amp; hit=true; }
+    if(cy > bounds.bottom){ nowOffsetY -=15; nowTilt=actionCfg.up.tilt; nowWingFreq=actionCfg.up.freq; nowWingAmp=actionCfg.up.amp; hit=true; }
+    if(hit) shieldEffect=1;
+}
+
+function drawShield(x,y){
+    if(shieldEffect<=0)return;
+    ctx.save();
+    ctx.globalAlpha=shieldEffect;
+    ctx.strokeStyle='#00f0ff';
+    ctx.lineWidth=3;
+    ctx.shadowColor='#00f0ff';
+    ctx.shadowBlur=15;
+    ctx.beginPath();
+    ctx.arc(x,y,70,0,Math.PI*2);
+    ctx.stroke();
+    ctx.restore();
+    shieldEffect*=0.9;
+}
+
+function drawSky() {
+    let cfg = weatherConfig[currentWeather];
+    let skyGrad = ctx.createLinearGradient(0,0,0,430);
+    skyGrad.addColorStop(0, cfg.top);
+    skyGrad.addColorStop(1, cfg.bottom);
+    ctx.fillStyle = skyGrad;
+    ctx.fillRect(0,0,900,430);
+    ctx.strokeStyle = 'rgba(0, 255, 128, 0.25)';
+    ctx.lineWidth = 1;
+    for(let y=0;y<=430;y+=45){ctx.beginPath();ctx.moveTo(0,y);ctx.lineTo(900,y);ctx.stroke();}
+    for(let x=0;x<=900;x+=75){ctx.beginPath();ctx.moveTo(x,0);ctx.lineTo(x,430);ctx.stroke();}
+    if(currentWeather === "sunny"){
+        ctx.fillStyle = 'rgba(255,255,255,0.25)';
+        clouds.forEach(c=>{
+            drawCloud(c.x, c.y, c.w);
+            c.x += c.speed;
+            if(c.x > c.w + 900) c.x = -c.w;
+        });
+    }
+    if(currentWeather === "rain"){
+        ctx.strokeStyle = "rgba(200,220,255,0.4)";
+        ctx.lineWidth = 1;
+        rainList.forEach(p=>{
+            ctx.beginPath();
+            ctx.moveTo(p.x, p.y);
+            ctx.lineTo(p.x, p.y+p.len);
+            ctx.stroke();
+            p.y += p.speed;
+            if(p.y > 430){ p.y = -p.len; p.x = Math.random()*900; }
+        });
+    }
+    if(currentWeather === "snow"){
+        ctx.fillStyle = "rgba(255,255,255,0.7)";
+        snowList.forEach(p=>{
+            ctx.beginPath();
+            ctx.arc(p.x,p.y,p.r,0,Math.PI*2);
+            ctx.fill();
+            p.y += p.speed;
+            p.x += Math.sin(p.y*0.02)*0.5;
+            if(p.y > 430){ p.y = -10; p.x = Math.random()*900; }
+        });
+    }
+}
+function drawCloud(x,y,w){
+    ctx.beginPath();
+    ctx.arc(x, y, w*0.3, 0, Math.PI*2);
+    ctx.arc(x+w*0.25, y-10, w*0.25, 0, Math.PI*2);
+    ctx.arc(x+w*0.5, y, w*0.35, 0, Math.PI*2);
+    ctx.arc(x+w*0.3, y+10, w*0.2, 0, Math.PI*2);
+    ctx.fill();
+}
+
+function drawRealBird(wingAngleDeg, tiltAng, time, offsetX=0, offsetY=0) {
+    let birdX = baseCenterX + nowOffsetX + offsetX;
+    let birdY = baseCenterY + nowOffsetY + offsetY;
+    drawShield(birdX, birdY);
+    ctx.save();
+    ctx.translate(birdX, birdY);
+    ctx.scale(flipDir, 1);
+    ctx.rotate(tiltAng * Math.PI / 180);
+    ctx.beginPath();
+    ctx.ellipse(0, 45, 55, 15, 0, 0, Math.PI * 2);
+    ctx.fillStyle = 'rgba(0,0,0,0.25)';
+    ctx.fill();
+    let bodyGrad = ctx.createLinearGradient(-45, -30, 45, 30);
+    bodyGrad.addColorStop(0, '#607d9c');
+    bodyGrad.addColorStop(0.5, '#364b60');
+    bodyGrad.addColorStop(1, '#202f3f');
+    ctx.beginPath();
+    ctx.moveTo(-45, 0);
+    ctx.bezierCurveTo(-20, -28, 25, -32, 40, -10);
+    ctx.bezierCurveTo(55, 5, 45, 20, 25, 28);
+    ctx.bezierCurveTo(-20, 30, -45, 8, -45, 0);
+    ctx.fillStyle = bodyGrad;
+    ctx.fill();
+    ctx.strokeStyle = 'rgba(100,200,255,0.35)';
+    ctx.lineWidth = 1.5;
+    ctx.stroke();
+    ctx.beginPath();
+    ctx.arc(38, -5, 18, 0, Math.PI * 2);
+    ctx.fillStyle = '#2c3e50';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(48, -8, 5, 0, Math.PI * 2);
+    ctx.fillStyle = '#00121a';
+    ctx.fill();
+    ctx.beginPath();
+    ctx.arc(49, -8, 2.5, 0, Math.PI * 2);
+    ctx.fillStyle = '#ffd700';
+    ctx.shadowColor = '#ffd700';
+    ctx.shadowBlur = 12;
+    ctx.fill();
+    ctx.shadowBlur = 0;
+    ctx.beginPath();
+    ctx.moveTo(55, -3);
+    ctx.lineTo(75, -6);
+    ctx.lineTo(55, 4);
+    ctx.closePath();
+    ctx.fillStyle = '#b88646';
+    ctx.fill();
+    let tailWag = Math.sin(time*3)*2;
+    ctx.fillStyle = '#3a5068';
+    ctx.beginPath();
+    ctx.moveTo(-42, -5);
+    ctx.lineTo(-70, -16+tailWag);
+    ctx.lineTo(-55, -2);
+    ctx.closePath();
+    ctx.fill();
+    ctx.beginPath();
+    ctx.moveTo(-42, 5);
+    ctx.lineTo(-70, 16+tailWag);
+    ctx.lineTo(-55, 2);
+    ctx.closePath();
+    ctx.fill();
+    let wingRad = wingAngleDeg * Math.PI / 180;
+    function drawWing(angle, isLeft){
+        ctx.save();
+        let px = isLeft ? -28 : 28;
+        let py = -10;
+        ctx.translate(px, py);
+        ctx.rotate(angle);
+        let g = ctx.createLinearGradient(0,0,70,0);
+        g.addColorStop(0,'#37474f');g.addColorStop(1,'#546e7a');
+        ctx.beginPath();
+        ctx.moveTo(0,0);ctx.lineTo(50,-15);ctx.lineTo(70,-8);ctx.lineTo(50,5);ctx.closePath();
+        ctx.fillStyle=g;ctx.fill();
+        ctx.strokeStyle='rgba(100,220,255,0.4)';ctx.lineWidth=1.2;ctx.stroke();
+        ctx.restore();
+    }
+    drawWing(wingRad, true);
+    drawWing(-wingRad, false);
+    ctx.restore();
+}
+
+let lastTime = 0;
+function loop(t){
+    requestAnimationFrame(loop);
+    let dt = (t - lastTime)/1000;
+    lastTime = t;
+    const timeSec = t / 1000;
+    updateBirdFormLerp();
+    checkBounds();
+
+    // ✅ 智能飞行：后方先掉头，再飞行
+    if(hasFlyTarget && canStartFly && !needTurn && !isPlaying){
+        let worldX = baseCenterX + nowOffsetX;
+        let targetWorldX = baseCenterX + targetFlyX;
+        let isBehind = false;
+
+        if(flipDir === 1){
+            isBehind = targetWorldX < worldX - 30;
+        }else{
+            isBehind = targetWorldX > worldX + 30;
+        }
+
+        if(isBehind){
+            hasFlyTarget = false;
+            needTurn = true;
+            playAction("turn");
+            return;
+        }
+    }
+
+    // ✅ 平滑飞往目标
+    if(hasFlyTarget && canStartFly && !needTurn){
+        nowOffsetX += (targetFlyX - nowOffsetX) * 0.035;
+        nowOffsetY += (targetFlyY - nowOffsetY) * 0.035;
+
+        let dx = targetFlyX - nowOffsetX;
+        let dy = targetFlyY - nowOffsetY;
+        if(Math.abs(dy) > 25){
+            nowTilt = dy < 0 ? -12 : 12;
+            nowWingFreq = 3.0;
+            nowWingAmp = 40;
+        }else{
+            nowTilt = 0;
+            nowWingFreq = 2.5;
+            nowWingAmp = 35;
+        }
+
+        let dist = Math.hypot(dx, dy);
+        if(dist < 10){
+            hasFlyTarget = false;
+            nowTilt = 0;
+            nowWingFreq = 2.2;
+            nowWingAmp = 32;
+        }
+    }
+
+    if(!isPlaying || currentAction !== "glide"){
+        nowWingAmp = lerp(nowWingAmp, 6 + Math.sin(timeSec * 1.5) * 4, 0.1);
+    }
+    let phase = Math.PI * 2 * nowWingFreq * timeSec;
+    let wingAngle = nowWingAmp * wingCurve(phase);
+    drawSky();
+    drawRealBird(wingAngle, nowTilt, timeSec);
+    if(enableSynergy){
+        birdOffsets.forEach(pos=>{
+            drawRealBird(wingAngle, nowTilt, timeSec, pos.x, pos.y);
+        });
+    }
+}
+requestAnimationFrame(loop);
+
+const partData = {
+    motor:{title:"扑翼驱动电机",img:"images/robot-bionic-06.jpg",principle:"电磁感应转换力矩，带动连杆实现翅膀往复扑动。",func:"提供翅膀动力，调节频率振幅。",feature:"小巧高响应，支持PWM调速。"},
+    wing:{title:"碳纤维机翼",img:"images/robot-bionic-08.jpg",principle:"翼面曲面形成空气流速差产生升力。",func:"产生升力推力，降低风阻。",feature:"轻量高强度，韧性好不易变形。"},
+    mcu:{title:"主控芯片",img:"images/robot-bionic-09.jpg",principle:"采集传感器数据，姿态解算输出控制信号。",func:"整机大脑，调度各部件协同。",feature:"低功耗高运算，多接口兼容。"},
+    sensor:{title:"姿态传感器",img:"images/robot-bionic-12.jpg",principle:"集成陀螺加速度计，检测倾角角速度。",func:"捕捉姿态角度，反馈自稳。",feature:"高精度低延时，抗干扰强。"}
+};
+
+const modalMask = document.getElementById('modalMask');
+const modalImg = document.getElementById('modalImg');
+const modalTitle = document.getElementById('modalTitle');
+const modalPrinciple = document.getElementById('modalPrinciple');
+const modalFunc = document.getElementById('modalFunc');
+const modalFeature = document.getElementById('modalFeature');
+const imgZoomMask = document.getElementById('imgZoomMask');
+const zoomImg = document.getElementById('zoomImg');
+
+document.querySelectorAll('.card').forEach(card=>{
+    card.onclick = ()=>{
+        let d = partData[card.dataset.id];
+        modalImg.src = d.img;
+        modalTitle.innerText = d.title;
+        modalPrinciple.innerText = d.principle;
+        modalFunc.innerText = d.func;
+        modalFeature.innerText = d.feature;
+        modalMask.style.display = 'flex';
+    }
+});
+function closeModal(){modalMask.style.display='none';}
+modalMask.onclick = e=>{if(e.target===modalMask)closeModal();};
+modalImg.onclick = function(){zoomImg.src=this.src;imgZoomMask.style.display='flex';};
+imgZoomMask.onclick = function(){imgZoomMask.style.display='none';};
+
+updateUI();
+
+// ✅ 点击触发智能飞行
+canvas.addEventListener('click', function(e){
+    if(!canStartFly || isPlaying || needTurn) return;
+    const rect = canvas.getBoundingClientRect();
+    let clickX = e.clientX - rect.left;
+    let clickY = e.clientY - rect.top;
+
+    clickX = Math.max(bounds.left, Math.min(bounds.right, clickX));
+    clickY = Math.max(bounds.top, Math.min(bounds.bottom, clickY));
+
+    targetFlyX = clickX - baseCenterX;
+    targetFlyY = clickY - baseCenterY;
+    hasFlyTarget = true;
+});
+
+// ==========================
+// AI 全息小鸟 + 语音双控
+// ==========================
+const hCanvas = document.getElementById('holoCanvas');
+const hCtx = hCanvas.getContext('2d');
+hCanvas.width = 180;
+hCanvas.height = 180;
+
+let audioContext, analyser;
+let soundLevel = 0;
+let wingWave = 0;
+let recognition = null;
+let isListening = false;
+
+const holoBird = document.getElementById('holoBird');
+const aiPanel = document.getElementById('aiPanel');
+const aiVoiceBtn = document.getElementById('aiVoiceBtn');
+const aiStatus = document.getElementById('aiStatus');
+
+holoBird.onclick = () => {
+    aiPanel.style.display = aiPanel.style.display === 'block' ? 'none' : 'block';
+};
+
+try {
+    const SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SpeechRecognition();
+    recognition.lang = 'zh-CN';
+    recognition.continuous = true;
+    recognition.interimResults = false;
+} catch(e) {}
+
+aiVoiceBtn.onclick = () => {
+    if(!recognition) { alert('浏览器不支持语音识别'); return; }
+    isListening = !isListening;
+    if(isListening){
+        aiVoiceBtn.innerText = '停止语音识别';
+        aiVoiceBtn.classList.add('active');
+        aiStatus.innerText = '🎤 正在听你说话...';
+        recognition.start();
+    } else {
+        aiVoiceBtn.innerText = '开始语音识别';
+        aiVoiceBtn.classList.remove('active');
+        aiStatus.innerText = '已停止识别';
+        recognition.stop();
+    }
+};
+
+if(recognition){
+    recognition.onresult = (e) => {
+        const txt = e.results[e.results.length-1][0].transcript.trim();
+        aiStatus.innerText = '你说：' + txt;
+        const cmd = txt.toLowerCase();
+        execVoiceCmd(cmd);
+    };
+}
+
+function execVoiceCmd(cmd){
+    if(cmd.includes('开启旅行') || cmd.includes('开始旅行')){
+        startBtn.click();
+        aiStatus.innerText = '已执行：开启旅行';
+    } 
+    else if(cmd.includes('复位归位') || cmd.includes('复位')){
+        resetBird();
+        aiStatus.innerText = '已执行：复位归位';
+    }
+    else if(cmd.includes('悬停')){ playAction('hover'); aiStatus.innerText='已执行：悬停'; }
+    else if(cmd.includes('上升')){ playAction('up'); aiStatus.innerText='已执行：上升'; }
+    else if(cmd.includes('俯冲')){ playAction('down'); aiStatus.innerText='已执行：俯冲'; }
+    else if(cmd.includes('滑翔')){ playAction('glide'); aiStatus.innerText='已执行：滑翔'; }
+    else if(cmd.includes('掉头')){ playAction('turn'); aiStatus.innerText='已执行：掉头'; }
+    else if(cmd.includes('前进')){ playAction('forward'); aiStatus.innerText='已执行：前进'; }
+    else if(cmd.includes('左转')){ playAction('left'); aiStatus.innerText='已执行：左转'; }
+    else if(cmd.includes('右转')){ playAction('right'); aiStatus.innerText='已执行：右转'; }
+    else if(cmd.includes('自动演示')){
+        runAutoDemo();
+        aiStatus.innerText = '已执行：自动演示模式';
+    }
+    else if(cmd.includes('协同交互') || cmd.includes('开启协同')){
+        if(!enableSynergy) synergyBtn.click();
+        aiStatus.innerText = '已执行：开启协同交互模式';
+    }
+    else if(cmd.includes('关闭协同')){
+        if(enableSynergy) synergyBtn.click();
+        aiStatus.innerText = '已执行：关闭协同交互模式';
+    }
+    else if(cmd.includes('一字行')){
+        setBirdForm('line');
+        aiStatus.innerText = '已列队：一字行';
+    } 
+    else if(cmd.includes('三角形')){
+        setBirdForm('triangle');
+        aiStatus.innerText = '已列队：三角形';
+    } 
+    else if(cmd.includes('菱形')){
+        setBirdForm('random');
+        aiStatus.innerText = '已列队：菱形';
+    }
+    else if(cmd.includes('晴天')){
+        document.querySelectorAll('.weather-btn')[0].click();
+        aiStatus.innerText = '已切换：晴天';
+    }
+    else if(cmd.includes('雨天')){
+        document.querySelectorAll('.weather-btn')[1].click();
+        aiStatus.innerText = '已切换：雨天';
+    }
+    else if(cmd.includes('雪天')){
+        document.querySelectorAll('.weather-btn')[2].click();
+        aiStatus.innerText = '已切换：雪天';
+    }
+    else if(cmd.includes('频率调高')){
+        let val = parseFloat(freqI.value);
+        freqI.value = Math.min(5, val + 0.5);
+        freqI.dispatchEvent(new Event('input'));
+        aiStatus.innerText = '已调高：拍打频率';
+    }
+    else if(cmd.includes('频率调低')){
+        let val = parseFloat(freqI.value);
+        freqI.value = Math.max(0.5, val - 0.5);
+        freqI.dispatchEvent(new Event('input'));
+        aiStatus.innerText = '已调低：拍打频率';
+    }
+    else if(cmd.includes('振幅加大')){
+        let val = parseInt(ampI.value);
+        ampI.value = Math.min(55, val + 5);
+        ampI.dispatchEvent(new Event('input'));
+        aiStatus.innerText = '已加大：振幅角度';
+    }
+    else if(cmd.includes('振幅减小')){
+        let val = parseInt(ampI.value);
+        ampI.value = Math.max(10, val - 5);
+        ampI.dispatchEvent(new Event('input'));
+        aiStatus.innerText = '已减小：振幅角度';
+    }
+    else {
+        aiStatus.innerText = '暂无对应控制指令';
+    }
+}
+
+function drawHoloBird() {
+    hCtx.clearRect(0,0,180,180);
+    const t = performance.now() / 1000;
+    wingWave = Math.sin(t*12) * (1 + soundLevel * 2.5);
+    hCtx.save();
+    hCtx.translate(90,90);
+    hCtx.fillStyle = '#00f0ff';
+    hCtx.globalAlpha = 0.85;
+    hCtx.beginPath();
+    hCtx.ellipse(0,10,12,22,0,0,Math.PI*2);
+    hCtx.fill();
+    hCtx.fillStyle = '#00f0ff';
+    hCtx.globalAlpha = 0.6;
+    hCtx.beginPath();
+    hCtx.ellipse(-18 - wingWave, 2, 14,28, -0.3+wingWave*0.05,0,Math.PI*2);
+    hCtx.fill();
+    hCtx.beginPath();
+    hCtx.ellipse(18 + wingWave, 2, 14,28, 0.3-wingWave*0.05,0,Math.PI*2);
+    hCtx.fill();
+    hCtx.fillStyle = '#00f0ff';
+    hCtx.globalAlpha = 1;
+    hCtx.beginPath();
+    hCtx.arc(0,-8,8,0,Math.PI*2);
+    hCtx.fill();
+    hCtx.restore();
+    requestAnimationFrame(drawHoloBird);
+}
+drawHoloBird();
+
+async function initMic() {
+    try {
+        const stream = await navigator.mediaDevices.getUserMedia({ audio: true });
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        analyser = audioContext.createAnalyser();
+        analyser.fftSize = 32;
+        const source = audioContext.createMediaStreamSource(stream);
+        source.connect(analyser);
+        detectSound();
+    } catch(e) {}
+}
+function detectSound() {
+    if (!analyser) return;
+    const data = new Uint8Array(analyser.frequencyBinCount);
+    analyser.getByteFrequencyData(data);
+    let sum = 0;
+    data.forEach(v => sum += v);
+    soundLevel = sum / data.length / 10;
+    requestAnimationFrame(detectSound);
+}
+window.addEventListener('click', initMic, { once: true });
+
+const weatherConfig = {
+    sunny: { audio: "images/sunny.mp3", top: "#2b6b7f", bottom: "#c7e9f0", type: "sunny" },
+    rain: { audio: "images/rainy.mp3", top: "#2c3848", bottom: "#505e70", type: "rain" },
+    snow: { audio: "images/snowy.mp3", top: "#b8c8d8", bottom: "#e6f0f8", type: "snow" }
+};
+let currentWeather = "sunny";
+let rainList = [], snowList = [];
+for(let i=0;i<80;i++) rainList.push({x:Math.random()*900,y:Math.random()*430,len:10+Math.random()*15,speed:4+Math.random()*3});
+for(let i=0;i<60;i++) snowList.push({x:Math.random()*900,y:Math.random()*430,r:2+Math.random()*3,speed:1+Math.random()*1.5});
+
+document.querySelectorAll('.weather-btn').forEach(btn=>{
+    btn.onclick=()=>{
+        document.querySelectorAll('.weather-btn').forEach(b=>b.classList.remove('active'));
+        btn.classList.add('active');
+        currentWeather=btn.dataset.weather;
+        new Audio(weatherConfig[currentWeather].audio).play();
+    };
+});
+</script>
+</body>
+</html>

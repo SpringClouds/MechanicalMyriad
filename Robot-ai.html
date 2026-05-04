@@ -1,0 +1,800 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>智能机器人科普</title>
+<style>
+/* 全局样式重置与基础配置 —— 深邃明亮质感配色 */
+*{
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:"Microsoft Yahei", "Roboto", sans-serif;
+}
+:root {
+    --primary-color: #1BA9F5;
+    --secondary-color: #6C5CE7;
+    --accent-color: #F25C54;
+    --dark-bg: #E4EEF8;
+    --dark-bg-light: #D6E4F5;
+    --card-bg: rgba(255, 255, 255, 0.9);
+    --text-primary: #1E293B;
+    --text-secondary: #334155;
+    --shadow: 0 8px 24px rgba(27, 169, 245, 0.18);
+    --glow: 0 0 20px rgba(27, 169, 245, 0.35);
+    --hologram-glow: 0 0 20px rgba(108, 92, 231, 0.2), 0 0 30px rgba(27, 169, 245, 0.15);
+    --gradient: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+}
+html,body{
+    width:100%;
+    overflow-x:hidden;
+}
+body{
+    background: var(--dark-bg);
+    color: var(--text-primary);
+    background-image: 
+        radial-gradient(circle at 10% 20%, rgba(27, 169, 245, 0.08) 0%, transparent 25%),
+        radial-gradient(circle at 90% 80%, rgba(108, 92, 231, 0.08) 0%, transparent 25%);
+    background-attachment: fixed;
+}
+
+/* 顶部导航 */
+#top-nav{
+    position: fixed;
+    top:0;
+    left:0;
+    width:100%;
+    height:60px;
+    background:rgba(255,255,255,0.98);
+    display:flex;
+    align-items:center;
+    justify-content:flex-start;
+    padding:0 30px;
+    border-bottom:1px solid rgba(27,169,245,0.35);
+    z-index:999;
+    box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+}
+#top-nav a{
+    color:var(--text-primary);
+    font-size:18px;
+    text-decoration:none;
+    transition:0.3s;
+}
+#top-nav a:hover{
+    color:var(--primary-color);
+}
+
+.banner{
+    width:100%;
+    min-height:300px;
+    height:60vh;
+    position: relative;
+    overflow: hidden;
+    border-bottom:1px solid rgba(27,169,245,0.25);
+    margin-top:60px;
+    display:flex;
+    align-items:center;
+    justify-content: space-between;
+    padding: 20px;
+    background: #fff;
+}
+.banner .overlay{
+    position:absolute;
+    top:0;left:0;
+    width:100%;height:100%;
+    background:linear-gradient(rgba(255,255,255,0.08),rgba(255,255,255,0.08));
+    z-index:1;
+}
+
+/* 左侧图片轮播 */
+.banner-left {
+    position: relative;
+    width: 65%;
+    height: 100%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+}
+.banner-slide {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    object-fit: contain;
+    opacity: 0;
+    transition: opacity 1.2s ease;
+}
+.banner-slide.active {
+    opacity: 1;
+}
+
+.slider-arrow {
+    position:absolute;
+    top:50%;
+    transform:translateY(-50%);
+    width:44px;
+    height:44px;
+    background:rgba(27, 169, 245, 0.2);
+    border:1px solid var(--primary-color);
+    border-radius:50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    font-size:20px;
+    color:var(--primary-color);
+    cursor:pointer;
+    z-index:3;
+    transition:0.3s;
+}
+.slider-arrow:hover {
+    background:rgba(27, 169, 245, 0.3);
+}
+.slider-arrow.left {
+    left:10px;
+}
+.slider-arrow.right {
+    right:10px;
+}
+
+.banner .text-content{
+    position: relative;
+    z-index: 2;
+    width: 30%;
+    min-width:200px;
+    display:flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: flex-start;
+    text-align: left;
+    padding:0 10px;
+    background: transparent !important;
+}
+.banner h1{
+    font-size:clamp(20px, 4vw, 38px);
+    background:var(--gradient);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin:4px 0;
+}
+.banner p{
+    font-size:clamp(15px, 2vw, 20px);
+    color:var(--primary-color);
+    margin:4px 0;
+}
+
+/* 主体布局 */
+.main{
+    display:flex;
+    width:100%;
+    max-width:1400px;
+    margin:40px auto;
+    gap:20px;
+    padding:0 15px;
+    flex-wrap:wrap;
+}
+
+/* 左侧导航 */
+#left-nav{
+    width:100%;
+    max-width:220px;
+    display:flex;
+    flex-direction:column;
+    gap:10px;
+    position:sticky;
+    top:80px;
+    height:fit-content;
+}
+#left-nav a{
+    color: var(--text-primary);
+    text-decoration: none;
+    font-size: 20px;
+    padding: 14px 16px;
+    border-radius: 10px;
+    transition: 0.3s;
+    background: var(--card-bg);
+    border: 1px solid rgba(27,169,245,0.25);
+    text-align:center;
+    cursor: pointer;
+}
+#left-nav a:hover{
+    background: rgba(27,169,245,0.12);
+    color: var(--primary-color);
+    border-left:4px solid var(--primary-color);
+}
+#left-nav a.active{
+    background: rgba(27,169,245,0.18);
+    color: var(--primary-color);
+    border-left:4px solid var(--primary-color);
+    font-weight:bold;
+}
+
+.tip-wrap {
+    text-align: center;
+    margin:2px 0;
+}
+.tip {
+    font-size: 16px;
+    color: var(--primary-color);
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    gap:4px;
+}
+.tip span {
+    font-size: 16px;
+}
+
+/* 右侧内容区 */
+.content{
+    flex:1;
+    min-width:280px;
+}
+.container{ width:100%; }
+
+h2{
+    text-align:center;
+    font-size:clamp(22px, 4vw, 32px);
+    background:var(--gradient);
+    -webkit-background-clip:text;
+    background-clip:text;
+    color:transparent;
+    margin-bottom:25px;
+}
+
+/* 布局 */
+.card-wrap{
+    display:grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap:20px;
+}
+.card-wrap-single{
+    display:grid;
+    grid-template-columns: 1fr;
+    gap:20px;
+    max-width:100%;
+    margin:0 auto;
+}
+
+/* 🔥 核心能力卡片：统一宽度 + 严格对齐 */
+.core-width {
+    max-width: 950px !important;
+    width: 100% !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+}
+
+/* 卡片样式 */
+.card {
+    background: var(--card-bg);
+    padding: 20px;
+    border-radius: 16px;
+    border: 1px solid rgba(27,169,245,0.3);
+    box-shadow: var(--shadow);
+    transition: all 0.4s ease;
+    backdrop-filter: blur(10px);
+    display:flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+}
+.card:hover{
+    transform:translateY(-4px);
+    box-shadow:var(--hologram-glow);
+}
+.card-block {
+    display:block !important;
+}
+.card-text {
+    flex: 1;
+}
+
+/* 🔥 核心能力专用：放大右侧图片 */
+.core-width .card-image {
+    flex: 0 0 150px !important;
+}
+.core-width .card-img {
+    height: 130px !important;
+}
+
+.card-image {
+    flex: 0 0 120px;
+}
+.card-img {
+    width: 100%;
+    height: 100px;
+    object-fit: cover;
+    border-radius: 10px;
+    cursor: pointer;
+    transition: 0.2s;
+}
+.card-img:hover {
+    transform: scale(1.03);
+}
+
+.card-img-full {
+    width: 100%;
+    height: auto;
+    max-height: 350px;
+    object-fit: contain;
+    display: block;
+    margin:12px auto 0;
+    border-radius: 10px;
+    cursor: pointer;
+}
+
+/* 分类图片统一样式（缩小+自适应） */
+.card-img-sm {
+    width: 100%;
+    max-width: 220px;
+    height: 120px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin: 10px auto 0;
+    display: block;
+    cursor: pointer;
+}
+
+.card h3{
+    color:var(--primary-color);
+    font-size:clamp(17px, 3vw, 21px);
+    margin-bottom:10px;
+}
+.card h4{
+    color:var(--secondary-color);
+    font-size:17px;
+    margin:10px 0 6px;
+}
+.card p{
+    color:var(--text-secondary);
+    font-size:15px;
+    line-height:1.7;
+    margin-bottom:10px;
+}
+.card ul{
+    padding-left:20px;
+}
+.card li{
+    color:var(--text-secondary);
+    line-height:1.7;
+    margin-bottom:4px;
+    font-size:15px;
+}
+
+footer{
+    text-align:center;
+    padding:25px;
+    background:var(--dark-bg-light);
+    border-top:1px solid rgba(27,169,245,0.25);
+    color:#475666;
+    margin-top:30px;
+    font-size:14px;
+}
+
+.tab-content {
+    display:none;
+}
+.tab-content.active {
+    display:block;
+}
+
+/* 图片放大弹窗 */
+.img-modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.85);
+    z-index: 9999;
+    align-items: center;
+    justify-content: center;
+    padding: 15px;
+}
+.img-modal.show {
+    display: flex;
+}
+.img-modal-content {
+    max-width: 95%;
+    max-height: 90%;
+    border-radius: 10px;
+}
+.img-modal-close {
+    position: absolute;
+    top: 15px;
+    right: 20px;
+    font-size: 32px;
+    color: #fff;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.img-modal-close:hover {
+    color: var(--primary-color);
+}
+
+/* 移动端适配 */
+@media (max-width:768px){
+    .card-wrap{
+        grid-template-columns:1fr;
+    }
+    .card {
+        flex-direction: column;
+        align-items:flex-start;
+        gap:12px;
+    }
+    .card-image {
+        width: 100%;
+        flex: initial;
+    }
+    .card-img {
+        height:140px;
+    }
+    .banner{
+        height:50vh;
+        flex-direction: column;
+        justify-content: center;
+        gap:15px;
+        padding:15px;
+    }
+    .banner .text-content,
+    .banner-left {
+        width: 100%;
+    }
+    .banner-left {
+        height: 65%;
+    }
+}
+.info-row{display:flex;align-items: flex-start; margin-bottom:5px;}
+.info-row h4{flex: 0 0 80px; font-weight: blod;}
+.info-row p{flex:1;line-height: 1.5;}
+</style>
+</head>
+
+<body>
+
+<!-- 顶部导航 -->
+<div id="top-nav">
+    <a href="index.html">⬅返回首页</a>
+</div>
+
+<!-- 头部轮播：左侧图片 + 右侧文字 -->
+<div id="home" class="banner">
+    <div class="overlay"></div>
+
+    <!-- 左侧 5 张图片轮播 -->
+    <div class="banner-left">
+        <img class="banner-slide active" src="images/robot-ai-01.jpg">
+        <img class="banner-slide" src="images/robot-ai-02.jpg">
+        <img class="banner-slide" src="images/robot-ai-03.jpg">
+        <img class="banner-slide" src="images/robot-ai-04.jpg">
+        <img class="banner-slide" src="images/robot-ai-05.jpg">
+
+        <div class="slider-arrow left" onclick="prevBannerSlide()">❮</div>
+        <div class="slider-arrow right" onclick="nextBannerSlide()">❯</div>
+    </div>
+
+    <div class="text-content">
+        <h1>🤖 智能机器人</h1>
+        <h1>科普全解</h1>
+        <p>通俗易懂</p>
+        <p>感知 · 思考 · 执行</p>
+        <p>服务人类 · 科技未来</p>
+    </div>
+</div>
+
+<!-- 主体：左侧导航 + 右侧内容 -->
+<div class="main">
+    <div id="left-nav">
+        <a class="tab-btn active" onclick="changeTab(0)">基本介绍</a>
+        <div class="tip-wrap">
+            <div class="tip"><span>⬇</span> 点击查看</div>
+        </div>
+        <a class="tab-btn" onclick="changeTab(1)">核心能力</a>
+        <a class="tab-btn" onclick="changeTab(2)">核心技术</a>
+        <a class="tab-btn" onclick="changeTab(3)">机器人分类</a>
+        <a class="tab-btn" onclick="changeTab(4)">价值意义</a>
+    </div>
+
+    <div class="content">
+        <div class="container">
+
+            <!-- 1. 基本介绍 → 图片显示完整原图 -->
+            <div class="tab-content active">
+                <h2>什么是智能机器人</h2>
+                <div class="card-wrap-single">
+                    <div class="card card-block">
+                        <p>智能机器人是融合机械结构、电子控制、人工智能、传感器技术的高端智能设备。</p>
+                        <p>它不再是单纯按固定程序重复运动，而是能<strong>自主感知、思考判断、交互反馈、自主执行任务</strong>，像人一样感知环境、适应变化、完成复杂工作。</p>
+                        <img src="images/robot-ai-06.jpg" class="card-img-full" onclick="openImg(this.src)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. 核心能力 → 图片已放大 + 宽度统一 + 对齐 -->
+            <div class="tab-content">
+                <h2>核心能力</h2>
+                
+                <div class="card-wrap-single">
+
+                    <div class="card core-width">
+                        <div class="card-text">
+                            <h3>👀 感知能力 —— 机器人的“五官”</h3>
+                            <ul>
+                                <li>视觉识别：摄像头、激光雷达</li>
+                                <li>听觉识别：麦克风</li>
+                                <li>触觉力控：压力/力矩传感器</li>
+                                <li>环境传感：距离、温度、气体、红外</li>
+                                <li>本体感知：陀螺仪、IMU、编码器</li>
+                                 <p>（点击图片放大查看）</p>
+                            </ul>
+                        </div>
+                        <div class="card-image">
+                            <img src="images/robot-ai-01.jpg" class="card-img" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+
+                    <div class="card core-width">
+                        <div class="card-text">
+                            <h3>🧠 决策能力 —— 机器人的“大脑”</h3>
+                            <ul>
+                                <li>分析传感器收集的环境数据</li>
+                                <li>判断环境与任务状态</li>
+                                <li>自主规划路径、调整动作、最优决策</li>
+                                 <p>（点击图片放大查看）</p>
+                            </ul>
+                        </div>
+                        <div class="card-image">
+                            <img src="images/robot-ai-02.jpg" class="card-img" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+
+                    <div class="card core-width">
+                        <div class="card-text">
+                            <h3>🦾 执行能力 —— 机器人的“四肢”</h3>
+                            <ul>
+                                <li>行走、移动、避障、抓取</li>
+                                <li>关节屈伸、助力牵引、精密操作</li>
+                                <li>完成工业、康复、服务等任务</li>
+                                 <p>（点击图片放大查看）</p>
+                            </ul>
+                        </div>
+                        <div class="card-image">
+                            <img src="images/robot-ai-03.jpg" class="card-img" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+
+                    <div class="card core-width">
+                        <div class="card-text">
+                            <h3>🧠 学习与自适应能力（“智能” 的核心）</h3>
+                            <ul>
+                                <li>机器学习 / 深度学习：从数据提升识别、决策精度</li>
+                                <li>强化学习：试错优化动作策略</li>
+                                <li>迁移学习：复用已有知识到新任务</li>
+                                <li>在线自适应：实时修正、抗干扰、容错</li>
+                                 <p>（点击图片放大查看）</p>
+                            </ul>
+                        </div>
+                        <div class="card-image">
+                            <img src="images/robot-ai-04.jpg" class="card-img" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+
+                    <div class="card core-width">
+                        <div class="card-text">
+                            <h3>🗣️ 人机交互能力（延伸能力）</h3>
+                            <ul>
+                                <li>语音交互：识别、合成、对话</li>
+                                <li>触控 / 手势 / 表情：多模态交互</li>
+                                <li>情感计算：情绪识别、反馈、共情</li>
+                                 <p>（点击图片放大查看）</p>
+                            </ul>
+                        </div>
+                        <div class="card-image">
+                            <img src="images/robot-ai-05.jpg" class="card-img" onclick="openImg(this.src)">
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <!-- 3. 核心技术 -->
+            <div class="tab-content">
+                <h2>关键核心技术</h2>
+                <div class="card-wrap">
+                    <div class="card card-block">
+                        <h3>📷 视觉识别技术</h3>
+                        <p>机器“看得懂”世界，实现目标检测、姿态识别、导航避障、动作矫正。</p>
+                        <p>搭载高清摄像头与图像算法，可识别物体、颜色、形状、人脸，<br>广泛用于分拣、检测、安防领域。</p>
+                        <h4>基本原理：</h4>
+                        <p>
+                            <ul>
+                                <li>图像采集</li>
+                                <li>预处理（处理图像）</li>
+                                <li>特征提取</li>
+                                <li>模型推理</li>
+                                <li>输出结果</li>
+                            </ul>
+                        </p>
+                            <h4>基础任务：</h4>
+                            <p>
+                                <ul>
+                                    <li>图像分类</li>
+                                    <li>目标检测</li>
+                                    <li>图像分割</li>
+                                </ul></p>
+                    </div>
+                    <div class="card card-block">
+                        <h3>🤝 触觉与力控技术</h3>
+                        
+                            <h4>力控技术：</h4>
+                            <p>机器人 / 设备不再只控制位置，而是控制接触力、力矩、刚度，<br>实现柔性接触、柔顺作业。</p>
+                        
+                            <h4>触觉技术：</h4>
+                            <p>模拟人类皮肤感知，检测接触与否、压力大小、接触位置、<br>纹理、温度、滑动，是力控的感知基础。</p>
+                        
+
+                        <h4>力控 + 触觉 核心工作逻辑:</h4>
+                            <p>                            
+                                <ul>
+                                    <li>触觉传感器采集接触力 / 形变信号</li>
+                                    <li>控制器做力闭环运算</li>
+                                    <li>调节电机力矩 / 位置，实时柔顺调整</li>
+                                    <li>实现：不顶死、不夹坏、自适应贴合、容错装配</li>
+                                </ul></p>
+                    </div>
+                    <div class="card card-block">
+                        <h3>🦿 运动控制技术（自动化核心分支）</h3>
+                        <p>精准控制关节速度、位置、平衡，实现平稳行走、转向、自适应步态。</p>
+                        <h4>核心控制原理（三环控制架构）:</h4>
+                        <p>
+                            <ul>
+                                <li>电流环（内环）：控制力矩、响应最快</li>
+                                <li>速度环（中环）：控制转速、稳定动态</li>
+                                <li>位置环（外环）：控制定位精度</li>
+                            </ul> 
+                        </p>
+                        <h4>主流算法:</h4>
+                        <p>
+                            <ul>
+                                <li>PID：经典闭环，稳、准、易实现</li>
+                                <li>矢量控制（FOC）：交流电机高效控制，解耦磁场与转矩</li>
+                                <li>S 曲线加减速：平滑启停、减小振动、适合高速高精</li>
+                                <li>电子齿轮 / 电子凸轮：多轴同步、虚拟主轴</li>
+                                <li>前馈控制：提前补偿、提升动态响应</li>
+                            </ul>
+                        </p> 
+                        <h4>技术特点:</h4><p>高精度、高动态、多轴同步、稳定可靠、</p>
+                        <h4>典型应用场景:</h4><p>数控机床、工业机器人、半导体设备、新能源</p>
+                    </div>
+                    <div class="card card-block">
+                        <h3>🗣️ 人机交互技术</h3>
+                        <p>语音、触控、手势、远程操控，实现人和机器自然沟通。</p>
+                        <h4>关键核心技术：</h4>
+                        <p>
+                            <ul>
+                                <li>界面设计技术</li>
+                                <li>感知采集技术</li>
+                                <li>人工智能理解</li>
+                                <li>反馈呈现技术</li>
+                                <li>交互工程</li>
+                            </ul></p>
+                        <h4>典型应用领域：</h4>
+                        <p>
+                            <ul>
+                                <li>智能机器人</li>
+                                <li>工业自动化</li>
+                                <li>车载交互</li>
+                                <li>消费电子</li>
+                                <li>医疗设备</li>
+                            </ul></p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 4. 机器人分类 → 图片已缩小优化 -->
+            <div class="tab-content">
+                <h2>智能机器人常见分类</h2>
+                <div class="card-wrap">
+                    <div class="card card-block">
+                        <h4>🏥 康复医疗机器人</h4>
+                        <p>外骨骼、康复机械手，帮助病人恢复运动能力。</p>
+                        <p>（点击图片放大查看）</p>
+                        <img src="images/robot-ai-07.jpg" class="card-img-sm" onclick="openImg(this.src)">
+                    </div>
+                    <div class="card card-block">
+                        <h4>🏭 工业机器人</h4>
+                        <p>机械臂、分拣、焊接、打磨，用于工厂自动化生产。</p><p>（点击图片放大查看）</p>
+                        <img src="images/robot-ai-7.jpg" class="card-img-sm" onclick="openImg(this.src)">
+                    </div>
+                    <div class="card card-block">
+                        <h4>🏠 服务陪伴机器人</h4>
+                        <p>引导、配送、迎宾、家庭陪伴。</p><p>（点击图片放大查看）</p>
+                        <img src="images/robot-ai-08.jpg" class="card-img-sm" onclick="openImg(this.src)">
+                    </div>
+                    <div class="card card-block">
+                        <h4>🚒 特种机器人</h4>
+                        <p>消防、巡检、排爆、水下作业，替代人类高危工作。</p><p>（点击图片放大查看）</p>
+                        <img src="images/robot-ai-09.jpg" class="card-img-sm" onclick="openImg(this.src)">
+                    </div>
+                </div>
+            </div>
+
+            <!-- 5. 价值与意义 → 两个卡片同一行显示 -->
+            <div class="tab-content">
+                <h2>价值与意义</h2>
+                <div class="card-wrap">
+                    <div class="card card-block">
+                        <ul>
+                            <li>替代人类完成繁重、重复、危险工作</li>
+                            <li>助力医疗康复，帮助残障、术后人群重获行动能力</li>
+                            <li>提升工业自动化水平，提高生产效率与精度</li>
+                            <li>推动人工智能、智能制造、高端科技不断进步</li>
+                            <li>让生活更智能、更便捷、更安全</li>
+                        </ul>
+                    </div>
+                    <div class="card card-block" style="text-align:center; display:flex; align-items:center; justify-content:center;">
+                        <div>
+                            <p><strong>感知看懂世界 → 大脑智能决策 → 肢体精准执行</strong></p>
+                            <p style="margin-top:12px;">智能机器人是现代科技的集大成者，<br>视觉看清、触觉感知、智能思考、服务人类，<br>是未来科技发展的重要方向。</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+        </div>
+    </div>
+</div>
+
+<!-- 图片放大弹窗 -->
+<div class="img-modal" id="imgModal" onclick="closeImg()">
+    <span class="img-modal-close">&times;</span>
+    <img src="" class="img-modal-content" id="modalImg">
+</div>
+
+<footer>
+智能机器人科普专题
+</footer>
+
+<script>
+// ==================== 左侧 5 张图轮播 ====================
+const bannerSlides = document.querySelectorAll('.banner-slide');
+let bannerIdx = 0;
+
+function showBannerSlide(index) {
+    bannerSlides.forEach(s => s.classList.remove('active'));
+    bannerIdx = (index + bannerSlides.length) % bannerSlides.length;
+    bannerSlides[bannerIdx].classList.add('active');
+}
+function nextBannerSlide() { showBannerSlide(bannerIdx + 1); }
+function prevBannerSlide() { showBannerSlide(bannerIdx - 1); }
+setInterval(nextBannerSlide, 3500);
+
+// 左侧切换右侧内容
+const tabBtns = document.querySelectorAll('.tab-btn');
+const tabContents = document.querySelectorAll('.tab-content');
+function changeTab(index) {
+    tabBtns.forEach((btn,i)=>{
+        btn.classList.toggle('active', i===index);
+    });
+    tabContents.forEach((con,i)=>{
+        con.classList.toggle('active', i===index);
+    });
+}
+
+// 图片放大功能
+const imgModal = document.getElementById("imgModal");
+modalImg = document.getElementById("modalImg");
+
+function openImg(src) {
+    imgModal.classList.add("show");
+    modalImg.src = src;
+}
+
+function closeImg() {
+    imgModal.classList.remove("show");
+}
+</script>
+
+</body>
+</html>
